@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DigiToken - Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        body {
+            padding-bottom: 60px;
+        }
+
+        /* Mobile nav spacing */
+
+        .admin-stat-card {
+            background: var(--surface-color);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .queue-control {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .token-list-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+            background: var(--surface-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        /* Mobile Bottom Nav for Admin */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--surface-color);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px;
+            z-index: 1000;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+
+        .nav-icon {
+            font-size: 1.25rem;
+            margin-bottom: 2px;
+        }
+
+        .view-section {
+            display: none;
+        }
+
+        .view-section.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <span>🛡️ Admin Panel</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <a href="display.html" target="_blank" class="btn btn-outline"
+                style="padding: 6px 12px; font-size: 0.8rem; width: auto;">
+                📺 Public Display
+            </a>
+            <button id="theme-toggle" class="theme-toggle">🌙</button>
+        </div>
+    </nav>
+
+    <div class="container" style="padding-top: 80px; height: auto;">
+
+        <!-- DASHBOARD VIEW -->
+        <div id="view-dashboard" class="view-section active">
+            <h2 style="margin-bottom: 15px;">Queue Control</h2>
+
+            <div class="card" style="text-align: center; border-color: var(--primary-color); margin-bottom: 20px;">
+                <div style="color: var(--text-muted); font-size: 0.9rem;">Now Serving</div>
+                <div style="font-size: 3.5rem; font-weight: 800; color: var(--primary-color);">A-14</div>
+                <div style="color: var(--success-color); font-weight: 600;">Counter 1</div>
+            </div>
+
+            <div class="queue-control">
+                <button class="btn btn-primary" style="background-color: var(--success-color);"
+                    onclick="callNextToken()">
+                    🔔 Call Next
+                </button>
+                <button class="btn btn-outline" style="border-color: var(--error-color); color: var(--error-color);">
+                    ❌ No Show
+                </button>
+            </div>
+
+            <button class="btn btn-primary" style="margin-top: 10px; background-color: #6200EA;"
+                onclick="window.location.href='walkin.html'">
+                ➕ Walk-in Token
+            </button>
+
+            <h3 style="margin-top: 30px; margin-bottom: 15px;">Queue Preview</h3>
+            <div class="space-y-4">
+                <div class="token-list-item" style="border-radius: 8px;">
+                    <span style="font-weight: 700;">A-15</span>
+                    <span style="color: var(--text-muted);">Waiting (5m)</span>
+                </div>
+                <div class="token-list-item" style="border-radius: 8px;">
+                    <span style="font-weight: 700;">B-09</span>
+                    <span style="color: var(--text-muted);">Waiting (12m)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- TOKENS VIEW (MANAGEMENT) -->
+        <div id="view-tokens" class="view-section">
+            <h2 style="margin-bottom: 15px;">Token Management</h2>
+
+            <!-- Manual Walk-In Generation -->
+            <div class="card" style="margin-bottom: 20px; border-left: 5px solid #F59E0B;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h4 style="margin-bottom: 5px;">Walk-In Customer</h4>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0;">Next: <strong
+                                id="next-walkin">W-001</strong></p>
+                    </div>
+                    <button onclick="generateWalkIn()" class="btn btn-primary"
+                        style="width: auto; padding: 10px 20px; background-color: #F59E0B;">
+                        + Issue Token
+                    </button>
+                </div>
+            </div>
+
+            <!-- Unified Token List -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3>Active Queue</h3>
+                <div style="font-size: 0.8rem; color: var(--text-muted);">
+                    <span id="queue-count">0</span> In Queue
+                </div>
+            </div>
+
+            <div id="token-list" class="space-y-4">
+                <!-- Tokens will be injected here via JS -->
+                <div class="card" style="text-align: center; padding: 30px; color: var(--text-muted);">
+                    Loading tokens...
+                </div>
+            </div>
+
+            <!-- Demo Controls (Hidden from User, for testing) -->
+            <div style="opacity: 0.5; margin-top: 30px; text-align: center; font-size: 0.7rem;">
+                <button onclick="simulateOnlineBooking()"
+                    style="background: none; border: 1px dashed #ccc; padding: 5px;">Simulate Online Booking
+                    (A-xx)</button>
+            </div>
+        </div>
+
+        <!-- ANALYTICS VIEW -->
+        <div id="view-analytics" class="view-section">
+            <h2 style="margin-bottom: 15px;">Daily Analytics</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
+                <div class="admin-stat-card">
+                    <div style="font-size: 1.5rem; font-weight: 700;">142</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);">Total Tokens</div>
+                </div>
+                <div class="admin-stat-card">
+                    <div style="font-size: 1.5rem; font-weight: 700;">8m</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);">Avg Wait</div>
+                </div>
+            </div>
+
+            <div class="card"
+                style="height: 200px; display: flex; align-items: center; justify-content: center; color: var(--text-muted);">
+                [Chart Placeholder]
+            </div>
+        </div>
+
+        <!-- SETTINGS VIEW -->
+        <div id="view-settings" class="view-section">
+            <h2 style="margin-bottom: 15px;">System Settings</h2>
+            <div class="card space-y-6">
+                <div>
+                    <h4 style="margin-bottom: 10px;">Notifications</h4>
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <span>Enable Email System</span>
+                        <input type="checkbox" checked>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>Enable WhatsApp System</span>
+                        <input type="checkbox" checked>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 style="margin-bottom: 10px;">Services</h4>
+                    <button class="btn btn-outline" style="font-size: 0.9rem;">Manage Services & QRs</button>
+                </div>
+
+                <button class="btn btn-ghost" style="color: var(--error-color);"
+                    onclick="window.location.href='index.html'">
+                    Log Out
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Bottom Nav -->
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="switchAdminTab('dashboard', this)">
+            <span class="nav-icon">📊</span>
+            <span>Queue</span>
+        </div>
+        <div class="nav-item" onclick="switchAdminTab('tokens', this)">
+            <span class="nav-icon">📝</span>
+            <span>Tokens</span>
+        </div>
+        <div class="nav-item" onclick="switchAdminTab('analytics', this)">
+            <span class="nav-icon">📈</span>
+            <span>Stats</span>
+        </div>
+        <div class="nav-item" onclick="switchAdminTab('settings', this)">
+            <span class="nav-icon">⚙️</span>
+            <span>Settings</span>
+        </div>
+    </div>
+
+    <script src="assets/js/main.js"></script>
+    <script>
+        // State
+        let tokens = [
+            { id: 'A-14', type: 'online', service: 'Bank Service', status: 'serving', time: '10:00 AM' },
+            { id: 'A-15', type: 'online', service: 'Bank Service', status: 'waiting', time: '10:05 AM' },
+            { id: 'W-005', type: 'walkin', service: 'General', status: 'waiting', time: '10:12 AM' },
+            { id: 'A-16', type: 'online', service: 'Bank Service', status: 'waiting', time: '10:15 AM' }
+        ];
+
+        let nextWalkIn = 6;
+        let nextOnline = 17;
+
+        // Init
+        document.addEventListener('DOMContentLoaded', () => {
+            renderTokens();
+            updateNextWalkInLabel();
+        });
+
+        function switchAdminTab(viewId, navEl) {
+            // Update Nav
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            navEl.classList.add('active');
+
+            // Update View
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.getElementById('view-' + viewId).classList.add('active');
+        }
+
+        /* Token Management Logic */
+
+        function renderTokens() {
+            const listEl = document.getElementById('token-list');
+            const countEl = document.getElementById('queue-count');
+
+            if (!listEl) return;
+
+            // Filter out completed for the main list (simulated)
+            const activeTokens = tokens.filter(t => t.status !== 'completed');
+            countEl.innerText = activeTokens.filter(t => t.status === 'waiting').length;
+
+            listEl.innerHTML = activeTokens.map(t => {
+                const isOnline = t.type === 'online';
+                const badgeClass = isOnline ? 'badge-online' : 'badge-walkin';
+                const typeLabel = isOnline ? 'Pre-Booked' : 'Walk-In';
+
+                let actionBtn = '';
+                if (t.status === 'waiting') {
+                    actionBtn = `<button onclick="updateStatus('${t.id}', 'serving')" class="btn btn-outline" style="padding: 5px 10px; font-size: 0.75rem; width: auto;">Serve</button>`;
+                } else if (t.status === 'serving') {
+                    actionBtn = `<button onclick="updateStatus('${t.id}', 'completed')" class="btn btn-primary" style="padding: 5px 10px; font-size: 0.75rem; width: auto; background-color: var(--success-color);">Done</button>`;
+                }
+
+                return `
+                <div class="token-list-item" style="align-items: center;">
+                    <div style="flex: 1;">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                            <span style="font-weight: 700; font-size: 1.1rem;">${t.id}</span>
+                            <span class="badge ${badgeClass}">${typeLabel}</span>
+                        </div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">
+                            ${t.service} • ${t.time}
+                        </div>
+                    </div>
+                    <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 5px;">
+                        <span class="badge ${t.status === 'serving' ? 'badge-status-serving' : 'badge-status-waiting'}">
+                            ${t.status.charAt(0).toUpperCase() + t.status.slice(1)}
+                        </span>
+                        ${actionBtn}
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        function generateWalkIn() {
+            const id = `W-${String(nextWalkIn).padStart(3, '0')}`;
+            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            const newToken = {
+                id: id,
+                type: 'walkin',
+                status: 'waiting',
+                service: 'General Enquiry',
+                time: time
+            };
+
+            tokens.push(newToken);
+            nextWalkIn++;
+
+            updateNextWalkInLabel();
+            renderTokens();
+
+            // Optional: Show quick feedback
+            alert(`Token ${id} Generated!`);
+        }
+
+        function simulateOnlineBooking() {
+            const id = `A-${nextOnline}`;
+            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            tokens.push({
+                id: id,
+                type: 'online',
+                status: 'waiting',
+                service: 'Bank Service',
+                time: time
+            });
+            nextOnline++;
+            renderTokens();
+        }
+
+        function updateStatus(id, newStatus) {
+            const index = tokens.findIndex(t => t.id === id);
+            if (index !== -1) {
+                // If serving, ensure no others are serving (simple logic)
+                if (newStatus === 'serving') {
+                    tokens.forEach(t => {
+                        if (t.status === 'serving') t.status = 'completed'; // Auto complete previous
+                    });
+                }
+                tokens[index].status = newStatus;
+                renderTokens();
+                updateDashboardNowServing();
+            }
+        }
+
+        function callNextToken() {
+            // Find first waiting token
+            const nextToken = tokens.find(t => t.status === 'waiting');
+            if (nextToken) {
+                updateStatus(nextToken.id, 'serving');
+                // Optional: visual feedback or sound
+            } else {
+                alert('No tokens waiting in queue.');
+            }
+        }
+
+        function updateDashboardNowServing() {
+            const serving = tokens.find(t => t.status === 'serving');
+            if (serving) {
+                // Update Dashboard View Elements
+                const nowServingNumber = document.querySelector('#view-dashboard .card div:nth-child(2)');
+                if (nowServingNumber) nowServingNumber.innerText = serving.id;
+            }
+        }
+
+        function updateNextWalkInLabel() {
+            const el = document.getElementById('next-walkin');
+            if (el) el.innerText = `W-${String(nextWalkIn).padStart(3, '0')}`;
+        }
+
+    </script>
+</body>
+
+</html>

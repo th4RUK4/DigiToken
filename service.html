@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DigiToken - Book Token</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        .service-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .service-card {
+            background: var(--surface-color);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .service-card:hover,
+        .service-card.selected {
+            border-color: var(--primary-color);
+            background: rgba(0, 86, 210, 0.05);
+        }
+
+        .service-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .view {
+            display: none;
+        }
+
+        .view.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .time-slot {
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .time-slot.selected {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <a href="dashboard.html" class="nav-brand">
+            <!-- Back Arrow -->
+            <span style="font-size: 1.2rem;">←</span> Book Service
+        </a>
+        <button id="theme-toggle" class="theme-toggle">🌙</button>
+    </nav>
+
+    <div class="container" style="padding-top: 80px;">
+
+        <!-- STEP 1: SERVICE SELECT -->
+        <div id="step-1" class="view active">
+            <h2 style="margin-bottom: 20px;">Select Service</h2>
+            <div class="service-grid">
+                <div class="service-card" onclick="selectService('Banking')">
+                    <span class="service-icon">🏦</span>
+                    Banking
+                </div>
+                <div class="service-card" onclick="selectService('Medical')">
+                    <span class="service-icon">⚕️</span>
+                    Medical
+                </div>
+                <div class="service-card" onclick="selectService('Government')">
+                    <span class="service-icon">🏛️</span>
+                    Government
+                </div>
+                <div class="service-card" onclick="selectService('Utility')">
+                    <span class="service-icon">⚡</span>
+                    Utility Bill
+                </div>
+            </div>
+        </div>
+
+        <!-- STEP 2: DATE & TIME -->
+        <div id="step-2" class="view">
+            <h2 style="margin-bottom: 20px;">Select Time</h2>
+
+            <div class="space-y-4">
+                <div>
+                    <label style="display: block; margin-bottom: 8px; color: var(--text-muted);">Date</label>
+                    <input type="date" class="input-field">
+                </div>
+
+                <div>
+                    <label style="display: block; margin-bottom: 8px; color: var(--text-muted);">Available Slots</label>
+
+                    <div style="display: flex; gap: 15px; margin-bottom: 10px; font-size: 0.8rem;">
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <div
+                                style="width: 12px; height: 12px; border: 1px solid var(--primary-color); border-radius: 2px;">
+                            </div>
+                            <span>Available</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <div
+                                style="width: 12px; height: 12px; background: #eee; border: 1px solid #ddd; border-radius: 2px;">
+                            </div>
+                            <span style="color: var(--text-muted);">Booked</span>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+                        <!-- Booked (Light/Disabled) -->
+                        <div class="time-slot disabled"
+                            style="background: #f5f5f5; color: #aaa; border-color: #eee; cursor: not-allowed; opacity: 0.7;">
+                            09:00 AM</div>
+
+                        <!-- Available -->
+                        <div class="time-slot" onclick="selectTime(this)">09:15 AM</div>
+                        <div class="time-slot" onclick="selectTime(this)">09:30 AM</div>
+
+                        <!-- Booked -->
+                        <div class="time-slot disabled"
+                            style="background: #f5f5f5; color: #aaa; border-color: #eee; cursor: not-allowed; opacity: 0.7;">
+                            09:45 AM</div>
+
+                        <!-- Available -->
+                        <div class="time-slot" onclick="selectTime(this)">10:00 AM</div>
+                        <div class="time-slot" onclick="selectTime(this)">10:15 AM</div>
+                        <div class="time-slot" onclick="selectTime(this)">10:30 AM</div>
+                        <div class="time-slot" onclick="selectTime(this)">10:45 AM</div>
+
+                        <!-- Booked/Full -->
+                        <div class="time-slot disabled"
+                            style="background: #f5f5f5; color: #aaa; border-color: #eee; cursor: not-allowed; opacity: 0.7;">
+                            11:00 AM</div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px; display: flex; gap: 10px;">
+                <button class="btn btn-ghost" onclick="showStep(1)">Back</button>
+                <button class="btn btn-primary" onclick="showStep(3)">Continue</button>
+            </div>
+        </div>
+
+        <!-- STEP 3: CONFIRM -->
+        <div id="step-3" class="view">
+            <h2 style="margin-bottom: 20px;">Confirm Details</h2>
+
+            <div class="card space-y-4">
+                <div>
+                    <div style="color: var(--text-muted); font-size: 0.9rem;">Service</div>
+                    <div style="font-weight: 600; font-size: 1.1rem;" id="confirm-service">Banking</div>
+                </div>
+                <div>
+                    <div style="color: var(--text-muted); font-size: 0.9rem;">Date & Time</div>
+                    <div style="font-weight: 600;">Aug 24, 2026 • 10:30 AM</div>
+                </div>
+
+                <div style="border-top: 1px solid var(--border-color); padding-top: 15px;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <span>🔔 Notify via Email</span>
+                        <input type="checkbox" checked>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>📱 Notify via WhatsApp</span>
+                        <input type="checkbox" checked>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px; display: flex; gap: 10px;">
+                <button class="btn btn-ghost" onclick="showStep(2)">Back</button>
+                <button class="btn btn-primary" onclick="showStep(4)">Confirm Booking</button>
+            </div>
+        </div>
+
+        <!-- STEP 4: SUCCESS -->
+        <div id="step-4" class="view" style="text-align: center;">
+            <div
+                style="width: 60px; height: 60px; background: var(--success-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; color: white; font-size: 1.5rem;">
+                ✓
+            </div>
+            <h2>Token Generated!</h2>
+            <p style="color: var(--text-muted);">You have successfully joined the queue.</p>
+
+            <div class="card" style="margin: 30px 0; border: 2px solid var(--primary-color);">
+                <div style="font-size: 4rem; font-weight: 800; color: var(--primary-color);">B-42</div>
+                <div>Queue Position: 12</div>
+            </div>
+
+            <a href="dashboard.html" class="btn btn-primary">Go to Dashboard</a>
+        </div>
+
+    </div>
+
+    <script src="assets/js/main.js"></script>
+    <script>
+        let selectedService = '';
+
+        function showStep(n) {
+            document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+            document.getElementById('step-' + n).classList.add('active');
+        }
+
+        function selectService(name) {
+            selectedService = name;
+            document.getElementById('confirm-service').innerText = name;
+
+            // Highlight logic (visual only for now)
+            document.querySelectorAll('.service-card').forEach(c => c.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+
+            setTimeout(() => showStep(2), 300);
+        }
+
+        function selectTime(el) {
+            document.querySelectorAll('.time-slot').forEach(t => t.classList.remove('selected'));
+            el.classList.add('selected');
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DigiToken - Access</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        .auth-container {
+            max-width: 400px;
+            width: 100%;
+            margin: 80px auto 20px;
+        }
+
+        .tab-group {
+            display: flex;
+            margin-bottom: 20px;
+            background: var(--bg-color);
+            padding: 4px;
+            border-radius: 12px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 8px;
+            font-weight: 600;
+            color: var(--text-muted);
+            transition: all 0.2s;
+        }
+
+        .tab.active {
+            background: var(--surface-color);
+            color: var(--primary-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="nav-brand">
+            <img src="assets/img/logo.png" alt="DigiToken Logo" style="height: 32px;">
+            <span style="font-weight: 700; font-size: 1.2rem; color: var(--primary-color);">DigiToken</span>
+        </a>
+        <button id="theme-toggle" class="theme-toggle">🌙</button>
+    </nav>
+
+    <div class="auth-container">
+
+        <!-- Main Form Card -->
+        <div class="card">
+
+            <!-- Global Auth Tabs (Login vs Sign Up) -->
+            <div id="main-tabs" class="tab-group">
+                <div class="tab active" onclick="switchMainTab('login')">Login</div>
+                <div class="tab" onclick="switchMainTab('signup')">Sign Up</div>
+            </div>
+
+            <!-- LOGIN SECTION -->
+            <div id="view-login" class="section active">
+                <h2 style="text-align: center; margin-bottom: 1rem;">Welcome Back</h2>
+
+                <!-- Role Toggle -->
+                <div class="flex-center" style="margin-bottom: 1.5rem; gap: 10px;">
+                    <label class="flex-center" style="cursor: pointer; gap: 5px;">
+                        <input type="radio" name="role" value="user" checked onchange="toggleRole()"> User
+                    </label>
+                    <label class="flex-center" style="cursor: pointer; gap: 5px;">
+                        <input type="radio" name="role" value="admin" onchange="toggleRole()"> Admin
+                    </label>
+                </div>
+
+                <form onsubmit="handleLogin(event)" class="space-y-4">
+                    <div id="login-google" class="space-y-4">
+                        <button type="button" class="btn btn-outline" onclick="handleLogin(event)"
+                            style="border-color: #ddd; color: var(--text-main);">
+                            🔵 Continue with Google
+                        </button>
+                        <div style="text-align: center; color: var(--text-muted); font-size: 0.8rem;">OR</div>
+                    </div>
+
+                    <input type="email" class="input-field" placeholder="Email Address" required>
+                    <input type="password" class="input-field" placeholder="Password" required>
+
+                    <div style="text-align: right;">
+                        <span onclick="showView('view-forgot')"
+                            style="font-size: 0.8rem; color: var(--primary-color); cursor: pointer;">Forgot
+                            Password?</span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </form>
+            </div>
+
+            <!-- SIGN UP SECTION -->
+            <div id="view-signup" class="section">
+                <h2 style="text-align: center; margin-bottom: 1rem;">Create Account</h2>
+                <form onsubmit="handleSignup(event)" class="space-y-4">
+                    <button type="button" class="btn btn-outline" style="border-color: #ddd; color: var(--text-main);">
+                        🔵 Sign up with Google
+                    </button>
+                    <div style="text-align: center; color: var(--text-muted); font-size: 0.8rem;">OR</div>
+
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" class="input-field" placeholder="First Name" required>
+                        <input type="text" class="input-field" placeholder="Last Name" required>
+                    </div>
+                    <input type="email" class="input-field" placeholder="Email Address" required>
+                    <input type="password" class="input-field" placeholder="Password" required>
+
+                    <button type="submit" class="btn btn-primary">Sign Up</button>
+                </form>
+            </div>
+
+            <!-- FORGOT PASSWORD -->
+            <div id="view-forgot" class="section">
+                <h3>Reset Password</h3>
+                <p style="font-size: 0.9rem; color: var(--text-muted);">Enter your email to receive an OTP.</p>
+                <form onsubmit="handleForgot(event)" class="space-y-4">
+                    <input type="email" class="input-field" placeholder="Email Address" required>
+                    <button type="submit" class="btn btn-primary">Send OTP</button>
+                    <button type="button" class="btn btn-ghost" onclick="showView('view-login')">Back</button>
+                </form>
+            </div>
+
+            <!-- OTP SECTION -->
+            <div id="view-otp" class="section">
+                <h3>Verify OTP</h3>
+                <p style="font-size: 0.9rem; color: var(--text-muted);">Enter the 4-digit code sent to your email.</p>
+                <div class="flex-center" style="gap: 10px; margin: 20px 0;">
+                    <input type="text" class="input-field" style="width: 50px; text-align: center;" maxlength="1">
+                    <input type="text" class="input-field" style="width: 50px; text-align: center;" maxlength="1">
+                    <input type="text" class="input-field" style="width: 50px; text-align: center;" maxlength="1">
+                    <input type="text" class="input-field" style="width: 50px; text-align: center;" maxlength="1">
+                </div>
+                <button onclick="handleVerify(event)" class="btn btn-primary">Verify & Proceed</button>
+                <div style="text-align: center; margin-top: 10px;">
+                    <span style="font-size: 0.8rem; color: var(--primary-color); cursor: pointer;">Resend Code</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="assets/js/main.js"></script>
+    <script>
+        // Local Page Logic
+        function switchMainTab(type) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+
+            showView(type === 'login' ? 'view-login' : 'view-signup');
+        }
+
+        function showView(id) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+
+            // Hide tabs if drilling down (otp/forgot)
+            const showTabs = (id === 'view-login' || id === 'view-signup');
+            document.getElementById('main-tabs').style.display = showTabs ? 'flex' : 'none';
+        }
+
+        function toggleRole() {
+            const role = document.querySelector('input[name="role"]:checked').value;
+            const googleBtn = document.getElementById('login-google');
+            // Admins don't use Google Login in this spec
+            googleBtn.style.display = role === 'admin' ? 'none' : 'block';
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const role = document.querySelector('input[name="role"]:checked').value;
+            if (role === 'admin') {
+                window.location.href = 'admin.html';
+            } else {
+                window.location.href = 'dashboard.html';
+            }
+        }
+
+        function handleSignup(e) {
+            e.preventDefault();
+            // Simulate OTP flow
+            showView('view-otp');
+        }
+
+        function handleForgot(e) {
+            e.preventDefault();
+            showView('view-otp');
+        }
+
+        function handleVerify(e) {
+            // Verify and go to dashboard
+            window.location.href = 'dashboard.html';
+        }
+    </script>
+</body>
+
+</html>

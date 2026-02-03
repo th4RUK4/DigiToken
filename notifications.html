@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DigiToken - Notifications</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        .filter-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+        .status-delivered {
+            background-color: var(--success-color);
+        }
+
+        .status-failed {
+            background-color: var(--error-color);
+        }
+
+        .notif-row {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr auto;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+            gap: 10px;
+            font-size: 0.9rem;
+        }
+
+        .notif-row:last-child {
+            border-bottom: none;
+        }
+
+        @media (max-width: 600px) {
+            .notif-row {
+                grid-template-columns: 1fr auto;
+            }
+
+            .notif-details {
+                grid-column: 1 / -1;
+                font-size: 0.85rem;
+                color: var(--text-muted);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <a href="dashboard.html" class="nav-brand">
+            <span style="font-size: 1.2rem;">←</span> Back
+        </a>
+        <div style="font-weight: 600;">Notification History</div>
+        <button id="theme-toggle" class="theme-toggle"></button>
+    </nav>
+
+    <div class="container" style="padding-top: 80px;">
+
+        <div class="card space-y-4">
+            <!-- Filters -->
+            <div class="filter-bar">
+                <input type="text" placeholder="Search Token (e.g., A-14)" class="input-field"
+                    style="max-width: 200px;">
+                <select class="input-field" style="max-width: 150px;">
+                    <option value="all">All Channels</option>
+                    <option value="email">Email</option>
+                    <option value="whatsapp">WhatsApp</option>
+                </select>
+                <select class="input-field" style="max-width: 150px;">
+                    <option value="all">All Status</option>
+                    <option value="delivered">Delivered</option>
+                    <option value="failed">Failed</option>
+                </select>
+            </div>
+
+            <!-- Header -->
+            <div
+                style="background: var(--bg-color); padding: 10px 15px; border-radius: 8px; font-weight: 600; font-size: 0.8rem; color: var(--text-muted); display: grid; grid-template-columns: 1fr 2fr 1fr auto; gap: 10px;">
+                <div>Token</div>
+                <div>Channel & Message</div>
+                <div>Date</div>
+                <div>Status</div>
+            </div>
+
+            <!-- List -->
+            <div class="notif-list">
+                <div class="notif-row">
+                    <div style="font-weight: 700;">A-14</div>
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <span>📧 Email</span>
+                        </div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">Your token A-14 is now serving.</div>
+                    </div>
+                    <div style="color: var(--text-muted); font-size: 0.85rem;">Today, 10:01 AM</div>
+                    <div>
+                        <span
+                            style="background: rgba(3, 152, 85, 0.1); color: var(--success-color); padding: 4px 8px; border-radius: 12px; font-size: 0.75rem;">Delivered</span>
+                    </div>
+                </div>
+
+                <div class="notif-row">
+                    <div style="font-weight: 700;">W-005</div>
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <span>📱 WhatsApp</span>
+                        </div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">Token W-005 generated successfully.
+                        </div>
+                    </div>
+                    <div style="color: var(--text-muted); font-size: 0.85rem;">Today, 10:12 AM</div>
+                    <div>
+                        <span
+                            style="background: rgba(3, 152, 85, 0.1); color: var(--success-color); padding: 4px 8px; border-radius: 12px; font-size: 0.75rem;">Delivered</span>
+                    </div>
+                </div>
+
+                <div class="notif-row">
+                    <div style="font-weight: 700;">A-12</div>
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <span>📱 WhatsApp</span>
+                        </div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">Your turn is coming up in 5 mins.
+                        </div>
+                    </div>
+                    <div style="color: var(--text-muted); font-size: 0.85rem;">Today, 09:55 AM</div>
+                    <div>
+                        <span
+                            style="background: rgba(220, 38, 38, 0.1); color: var(--error-color); padding: 4px 8px; border-radius: 12px; font-size: 0.75rem;">Failed</span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 10px; font-size: 0.8rem; color: var(--text-muted);">
+                Showing 3 recent notifications
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/main.js"></script>
+    <script>
+        // Init theme toggle
+        const profile = JSON.parse(localStorage.getItem('userProfile'));
+    </script>
+</body>
+
+</html>

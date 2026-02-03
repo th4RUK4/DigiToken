@@ -1,0 +1,323 @@
+/* 
+   DigiToken - Main Stylesheet
+   Mobile-First, Light/Dark Mode Supported
+*/
+
+:root {
+    /* Color Palette - Light Mode (Violet Theme) */
+    --primary-color: #7F56D9;
+    /* Modern Violet */
+    --primary-hover: #6941C6;
+    --accent-color: #F4EBFF;
+    /* Very light purple for backgrounds/accents */
+    --bg-color: #FFFFFF;
+    /* Cleaner White */
+    --surface-color: #FFFFFF;
+    --text-main: #101828;
+    /* Darker Slate */
+    --text-muted: #667085;
+    --border-color: #D0D5DD;
+    --success-color: #039855;
+    --error-color: #D92D20;
+    --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(16, 24, 40, 0.1), 0 2px 4px -1px rgba(16, 24, 40, 0.06);
+}
+
+[data-theme="dark"] {
+    /* Color Palette - Dark Mode (Violet Theme) */
+    --primary-color: #9B8AFB;
+    /* Lighter Violet for Dark Mode */
+    --primary-hover: #7F56D9;
+    --accent-color: #2D2145;
+    /* Dark purple container bg */
+    --bg-color: #0C111D;
+    /* Very Dark Slate */
+    --surface-color: #161B22;
+    /* Darker Surface */
+    --text-main: #F4EBFF;
+    --text-muted: #98A2B3;
+    --border-color: #344054;
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.6);
+}
+
+/* Reset & Base */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    line-height: 1.5;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    overflow-x: hidden;
+    min-height: 100vh;
+}
+
+/* Typography */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
+}
+
+h1 {
+    font-size: 2rem;
+}
+
+h2 {
+    font-size: 1.5rem;
+}
+
+p {
+    margin-bottom: 1rem;
+}
+
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+/* Layout Utilities */
+.container {
+    width: 100%;
+    max-width: 480px;
+    /* Mobile focused max-width for content */
+    margin: 0 auto;
+    padding: 20px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.flex-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.flex-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.space-y-4>*+* {
+    margin-top: 1rem;
+}
+
+.space-y-6>*+* {
+    margin-top: 1.5rem;
+}
+
+/* Components */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 16px;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    outline: none;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 86, 210, 0.3);
+}
+
+.btn-primary:active {
+    transform: scale(0.98);
+}
+
+.btn-outline {
+    background-color: transparent;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+}
+
+.btn-ghost {
+    background-color: transparent;
+    color: var(--text-muted);
+}
+
+.card {
+    background-color: var(--surface-color);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
+}
+
+.input-field {
+    width: 100%;
+    padding: 14px;
+    background-color: var(--bg-color);
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    color: var(--text-main);
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.input-field:focus {
+    border-color: var(--primary-color);
+}
+
+/* Nav Bar */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background-color: var(--surface-color);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+}
+
+.nav-brand {
+    font-weight: 800;
+    font-size: 1.2rem;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Switch Style for Theme Toggle */
+.theme-toggle {
+    background-color: var(--border-color);
+    border: none;
+    width: 50px;
+    height: 26px;
+    border-radius: 20px;
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: flex;
+    align-items: center;
+    padding: 0;
+}
+
+.theme-toggle::after {
+    content: '';
+    position: absolute;
+    left: 3px;
+    width: 20px;
+    height: 20px;
+    background-color: white;
+    border-radius: 50%;
+    transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Dark Mode State handling via global attribute */
+[data-theme="dark"] .theme-toggle {
+    background-color: var(--primary-color);
+}
+
+[data-theme="dark"] .theme-toggle::after {
+    transform: translateX(24px);
+}
+
+.theme-toggle:hover {
+    opacity: 0.9;
+}
+
+.theme-toggle:hover {
+    background-color: var(--bg-color);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* Specific Screens */
+.splash-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: var(--bg-color);
+    z-index: 2000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.5s ease;
+}
+
+.splash-logo {
+    width: 120px;
+    height: auto;
+}
+
+/* Badges */
+.badge {
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.badge-online {
+    background-color: rgba(0, 86, 210, 0.1);
+    color: var(--primary-color);
+}
+
+.badge-walkin {
+    background-color: rgba(245, 158, 11, 0.1);
+    color: #F59E0B;
+    /* Amber/Orange */
+}
+
+.badge-status-waiting {
+    background-color: rgba(100, 116, 139, 0.1);
+    color: var(--text-muted);
+}
+
+.badge-status-serving {
+    background-color: rgba(3, 152, 85, 0.1);
+    color: var(--success-color);
+}
+
+/* Hide utility for JS toggling */
+.hidden {
+    display: none !important;
+}

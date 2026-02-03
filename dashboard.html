@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DigiToken - Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <a href="index.html" style="color: inherit; display: flex; align-items: center; gap: 8px;">
+                <span>🔹 DigiToken</span>
+            </a>
+        </div>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <!-- Profile Icon Placeholder -->
+            <!-- Profile Icon Button -->
+            <button onclick="window.location.href='profile.html'"
+                style="width: 32px; height: 32px; background: var(--primary-color); border: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.8rem; cursor: pointer; transition: transform 0.2s;"
+                onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1.0)'"
+                aria-label="Profile">
+                JP
+            </button>
+            <button id="theme-toggle" class="theme-toggle">🌙</button>
+        </div>
+    </nav>
+
+    <div class="container container-dashboard">
+
+        <!-- Welcome Header -->
+        <header style="margin-bottom: 20px; margin-top: 60px;">
+            <h2>Hello, Janith! 👋</h2>
+            <p style="color: var(--text-muted);">Here is your queue status today.</p>
+        </header>
+
+        <!-- Active Token Card -->
+        <div class="card"
+            style="border: 2px solid var(--primary-color); position: relative; overflow: hidden; margin-bottom: 20px;">
+            <!-- Decorative BG Blur -->
+            <div
+                style="position: absolute; top: -50%; right: -50%; width: 200px; height: 200px; background: var(--primary-color); opacity: 0.1; border-radius: 50%; filter: blur(40px);">
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+                <span
+                    style="font-size: 0.9rem; font-weight: 600; color: var(--primary-color); background: rgba(0, 86, 210, 0.1); padding: 4px 10px; border-radius: 20px;">
+                    ● Active
+                </span>
+                <span style="font-size: 0.8rem; color: var(--text-muted);">Bank Service</span>
+            </div>
+
+            <div style="text-align: center; margin: 20px 0;">
+                <div style="font-size: 3.5rem; font-weight: 800; color: var(--text-main); line-height: 1;">A-15</div>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Your Token Number</p>
+            </div>
+
+            <div
+                style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; border-top: 1px solid var(--border-color); padding-top: 15px;">
+                <div style="text-align: center;">
+                    <div style="font-size: 1.2rem; font-weight: 700;">3rd</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);">In Line</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 1.2rem; font-weight: 700;">~10m</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);">Estimated Wait</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <h3 style="font-size: 1.1rem; margin-bottom: 15px;">Quick Actions</h3>
+        <div class="space-y-4">
+            <a href="service.html" class="btn btn-primary">
+                ➕ Book New Token
+            </a>
+
+            <!-- Notification Settings (Mini) -->
+            <div class="card" style="padding: 15px;">
+                <h4 style="font-size: 1rem; margin-bottom: 15px;">Notifications</h4>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span>📧</span>
+                        <span style="font-size: 0.9rem;">Email Alerts</span>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" checked>
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span>💬</span>
+                        <span style="font-size: 0.9rem;">WhatsApp</span>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Toggle Switch CSS (Local for now) -->
+    <style>
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--border-color);
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: var(--success-color);
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(16px);
+        }
+    </style>
+
+
+    <!-- Quick Links Grid for Mobile/Desktop -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px;">
+        <div class="card" style="padding: 15px; text-align: center; cursor: pointer;"
+            onclick="window.location.href='notifications.html'">
+            <div style="font-size: 1.5rem; margin-bottom: 5px;">🔔</div>
+            <div style="font-weight: 600; font-size: 0.9rem;">Notifications</div>
+        </div>
+        <div class="card" style="padding: 15px; text-align: center; cursor: pointer;"
+            onclick="window.location.href='help.html'">
+            <div style="font-size: 1.5rem; margin-bottom: 5px;">🎧</div>
+            <div style="font-weight: 600; font-size: 0.9rem;">Help & Support</div>
+        </div>
+    </div>
+
+    <script src="assets/js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const profile = JSON.parse(localStorage.getItem('userProfile'));
+            if (profile) {
+                // Update Greeting
+                const greetingEl = document.querySelector('header h2');
+                if (greetingEl) {
+                    greetingEl.innerText = `Hello, ${profile.firstName}! 👋`;
+                }
+
+                // Update Nav Button
+                const navBtn = document.querySelector('button[aria-label="Profile"]');
+                if (navBtn) {
+                    navBtn.innerText = `${profile.firstName[0]}${profile.lastName[0]}`;
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

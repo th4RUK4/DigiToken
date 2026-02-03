@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DigiToken - Walk-in</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        .scanner-frame {
+            width: 80%;
+            height: 300px;
+            border: 2px dashed var(--primary-color);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+            margin: 20px auto;
+        }
+
+        .scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--accent-color);
+            box-shadow: 0 0 10px var(--accent-color);
+            animation: scan 2s infinite;
+        }
+
+        @keyframes scan {
+            0% {
+                top: 0;
+            }
+
+            100% {
+                top: 100%;
+            }
+        }
+
+        .big-token {
+            font-size: 5rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            line-height: 1;
+            text-shadow: 0 0 20px rgba(0, 86, 210, 0.3);
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="nav-brand">🔹 DigiToken</a>
+        <button id="theme-toggle" class="theme-toggle">🌙</button>
+    </nav>
+
+    <div class="container flex-center">
+
+        <!-- STEP 1: SCAN -->
+        <div id="step-scan" class="flex-col" style="width: 100%; text-align: center;">
+            <h2>Scan QR Code</h2>
+            <p style="color: var(--text-muted);">Point your camera at the counter QR code.</p>
+
+            <div class="scanner-frame" onclick="simulateScan()">
+                <div class="scan-line"></div>
+                <p style="color: var(--text-muted);">Scanning...</p>
+                <p style="position: absolute; bottom: 10px; font-size: 0.8rem; opacity: 0.7;">(Tap to Simulate)</p>
+            </div>
+
+            <button class="btn btn-ghost" onclick="window.history.back()">Cancel</button>
+        </div>
+
+        <!-- STEP 2: PROCESSING -->
+        <div id="step-processing" class="flex-col hidden" style="width: 100%; text-align: center;">
+            <div class="flex-center" style="height: 300px;">
+                <!-- Simple CSS Loader -->
+                <div
+                    style="width: 50px; height: 50px; border: 5px solid var(--border-color); border-top-color: var(--primary-color); border-radius: 50%; animation: spin 1s linear infinite;">
+                </div>
+                <style>
+                    @keyframes spin {
+                        100% {
+                            transform: rotate(360deg);
+                        }
+                    }
+                </style>
+            </div>
+            <h3>Generating Token...</h3>
+        </div>
+
+        <!-- STEP 3: TOKEN (MODAL POPUP) -->
+        <div id="step-token" class="hidden"
+            style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); z-index: 2000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px);">
+
+            <div class="card"
+                style="width: 90%; max-width: 350px; padding: 40px 20px; border: 3px solid var(--success-color); background: var(--surface-color); text-align: center; box-shadow: 0 10px 40px rgba(3, 152, 85, 0.3); animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+
+                <!-- Success Icon -->
+                <div
+                    style="width: 60px; height: 60px; background: var(--success-color); border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 20px;">
+                    ✓
+                </div>
+
+                <h2 style="color: var(--success-color); margin-bottom: 5px;">Token Generated!</h2>
+                <p style="font-weight: 600; color: var(--text-muted);">Your Token Number</p>
+
+                <div class="big-token" style="color: var(--success-color); text-shadow: none;">W-99</div>
+
+                <div style="background: rgba(3, 152, 85, 0.1); padding: 10px; border-radius: 8px; margin-top: 20px;">
+                    <div style="margin-bottom: 5px; font-size: 1.2rem; color: var(--text-main);">Position:
+                        <strong>5th</strong></div>
+                    <p style="color: var(--success-color); font-size: 0.9rem; margin: 0; font-weight: 500;">Please wait
+                        for your number.</p>
+                </div>
+
+                <br>
+                <button onclick="window.location.reload()" class="btn btn-primary"
+                    style="background-color: var(--success-color); border: none;">Done</button>
+            </div>
+
+            <style>
+                @keyframes popIn {
+                    0% {
+                        transform: scale(0.5);
+                        opacity: 0;
+                    }
+
+                    100% {
+                        transform: scale(1);
+                        opacity: 1;
+                    }
+                }
+            </style>
+        </div>
+
+    </div>
+
+    <script src="assets/js/main.js"></script>
+    <script>
+        function simulateScan() {
+            document.getElementById('step-scan').classList.add('hidden');
+            document.getElementById('step-processing').classList.remove('hidden');
+
+            // Simulate API delay
+            setTimeout(() => {
+                document.getElementById('step-processing').classList.add('hidden');
+                document.getElementById('step-token').classList.remove('hidden');
+            }, 1500);
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DigiToken - Welcome</title>
+    <!-- GFonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+
+<body>
+
+    <!-- Splash Screen -->
+    <div id="splash-screen" class="splash-screen">
+        <div class="flex-col flex-center animate-fade-in">
+            <!-- Logo Image -->
+            <img src="assets/img/logo.png" alt="DigiToken Logo" class="splash-logo">
+            <h1 style="margin-top: 20px; font-size: 1.5rem; color: var(--primary-color);">DigiToken</h1>
+            <p style="color: var(--text-muted); font-size: 0.875rem;">Your Queue, Digitized.</p>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <span>🔹 DigiToken</span>
+        </div>
+        <button id="theme-toggle" class="theme-toggle" aria-label="Toggle Dark Mode">🌙</button>
+    </nav>
+
+    <!-- Welcome Content -->
+    <div class="container flex-center">
+        <div class="flex-col space-y-6 animate-fade-in" style="width: 100%;">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">Hello! 👋</h1>
+                <p style="color: var(--text-muted);">Welcome to the future of queuing.</p>
+            </div>
+
+            <div class="space-y-4">
+                <a href="auth.html" class="btn btn-primary">
+                    Login / Sign Up
+                </a>
+
+                <a href="walkin.html" class="btn btn-outline">
+                    Walk-in (Quick Token)
+                </a>
+            </div>
+
+            <div style="text-align: center; margin-top: 2rem;">
+                <a href="admin.html" style="font-size: 0.875rem; color: var(--text-muted); text-decoration: underline;">
+                    Admin Login
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/main.js"></script>
+</body>
+
+</html>

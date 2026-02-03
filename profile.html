@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DigiToken - Profile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <a href="dashboard.html" style="color: inherit; display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 1.2rem;">←</span>
+                <span>Back</span>
+            </a>
+        </div>
+        <div>
+            <span style="font-weight: 600; font-size: 1.1rem; color: var(--text-main);">My Profile</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <button id="theme-toggle" class="theme-toggle">🌙</button>
+        </div>
+    </nav>
+
+    <div class="container" style="padding-top: 80px;">
+
+        <div class="card" style="text-align: center; margin-bottom: 20px;">
+            <div class="profile-initials"
+                style="width: 80px; height: 80px; background: var(--primary-color); border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 15px; font-weight: 600;">
+                JP
+            </div>
+            <h2>Janith Perera</h2>
+            <p style="color: var(--text-muted);">janith@example.com</p>
+        </div>
+
+        <div class="card">
+            <h3 style="margin-bottom: 20px;">Edit Details</h3>
+            <form onsubmit="handleSave(event)" class="space-y-4">
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: 500; color: var(--text-muted);">First
+                        Name</label>
+                    <input type="text" class="input-field" value="Janith" required>
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: 500; color: var(--text-muted);">Last
+                        Name</label>
+                    <input type="text" class="input-field" value="Perera" required>
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: 500; color: var(--text-muted);">Phone
+                        Number</label>
+                    <input type="tel" class="input-field" value="+94 77 123 4567" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="margin-top: 20px;">Save Changes</button>
+            </form>
+        </div>
+
+        <div class="space-y-4" style="margin-top: 20px;">
+            <button onclick="handleLogout()" class="btn btn-outline"
+                style="border-color: var(--error-color); color: var(--error-color);">
+                Log Out
+            </button>
+        </div>
+
+    </div>
+
+    <script src="assets/js/main.js"></script>
+    <script>
+        function handleSave(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.innerText;
+
+            // Get values
+            const firstName = e.target.querySelector('input[type="text"]:nth-of-type(1)').value;
+            const lastName = e.target.querySelector('input[type="text"]:nth-of-type(2)').value;
+
+            // Save to LocalStorage
+            localStorage.setItem('userProfile', JSON.stringify({ firstName, lastName }));
+
+            // Update UI immediately (optional, but good feedback)
+            document.querySelector('.card h2').innerText = `${firstName} ${lastName}`;
+            document.querySelector('.card .profile-initials').innerText = `${firstName[0]}${lastName[0]}`;
+
+            // Simulate saving
+            btn.innerText = "Saving...";
+            btn.disabled = true;
+
+            setTimeout(() => {
+                btn.innerText = "Saved!";
+                btn.style.backgroundColor = "var(--success-color)";
+
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.style.backgroundColor = "";
+                    btn.disabled = false;
+                }, 2000);
+            }, 800);
+        }
+
+        function handleLogout() {
+            if (confirm('Are you sure you want to logout?')) {
+                window.location.href = 'auth.html';
+            }
+        }
+    </script>
+</body>
+
+</html>
