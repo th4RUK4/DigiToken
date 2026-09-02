@@ -1,0 +1,97 @@
+/* Admin workspace styles and accessible interaction states. */
+
+:root {
+    --admin-content-width: 960px;
+    --admin-focus: 0 0 0 3px rgba(127, 86, 217, 0.22);
+}
+
+.admin-page .container {
+    max-width: var(--admin-content-width);
+}
+
+.admin-page button:focus-visible,
+.admin-page a:focus-visible,
+.admin-page input:focus-visible,
+.admin-page select:focus-visible {
+    outline: none;
+    box-shadow: var(--admin-focus);
+}
+
+.admin-page .navbar {
+    height: 64px;
+}
+
+.admin-page .navbar .btn {
+    min-height: 38px;
+}
+
+.admin-page .view-section {
+    padding-bottom: 24px;
+}
+
+.admin-page .token-action {
+    width: auto;
+    min-width: 72px;
+    padding: 7px 12px;
+    font-size: 0.78rem;
+}
+
+.admin-page .bottom-nav {
+    left: 50%;
+    right: auto;
+    bottom: 14px;
+    width: min(92%, 560px);
+    transform: translateX(-50%);
+    border: 1px solid var(--border-color);
+    border-radius: 18px;
+    padding: 8px max(10px, env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom));
+    box-shadow: var(--shadow-md);
+}
+
+.admin-page .nav-item {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    font: inherit;
+    padding: 5px 14px;
+    border-radius: 8px;
+}
+
+.admin-page .nav-item:hover {
+    background: var(--bg-color);
+}
+
+.admin-page .chart-card {
+    min-width: 0;
+}
+
+@media (max-width: 480px) {
+    .admin-page {
+        padding-bottom: 92px;
+    }
+
+    .admin-page .navbar {
+        padding: 0 12px;
+    }
+
+    .admin-page .navbar .btn {
+        padding: 6px 9px !important;
+        font-size: 0.72rem !important;
+    }
+
+    .admin-page .donut-layout {
+        gap: 14px;
+    }
+
+    .admin-page .donut {
+        flex-basis: 106px;
+        width: 106px;
+        height: 106px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .admin-page .view-section.active {
+        animation: none;
+    }
+}

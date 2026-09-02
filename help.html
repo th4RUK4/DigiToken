@@ -7,6 +7,7 @@
     <title>DigiToken - Help & Support</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/dashboard.css">
     <style>
         .faq-item {
             border-bottom: 1px solid var(--border-color);
@@ -52,9 +53,9 @@
     </style>
 </head>
 
-<body>
+<body class="dashboard-page">
     <nav class="navbar">
-        <a href="dashboard.html" class="nav-brand">
+        <a href="dashboard.html" class="nav-brand" data-back>
             <span style="font-size: 1.2rem;">←</span> Back
         </a>
         <div style="font-weight: 600;">Help & Support</div>
@@ -137,6 +138,25 @@
         </div>
 
     </div>
+
+    <nav class="dashboard-bottom-nav" aria-label="Dashboard navigation">
+        <a class="dashboard-nav-item" href="dashboard.html">
+            <span class="dashboard-nav-icon" aria-hidden="true">🏠</span>
+            <span>Home</span>
+        </a>
+        <a class="dashboard-nav-item" href="notifications.html">
+            <span class="dashboard-nav-icon" aria-hidden="true">🔔</span>
+            <span>Alerts</span>
+        </a>
+        <a class="dashboard-nav-item active" href="help.html" aria-current="page">
+            <span class="dashboard-nav-icon" aria-hidden="true">💡</span>
+            <span>How it works</span>
+        </a>
+        <a class="dashboard-nav-item" href="profile.html">
+            <span class="dashboard-nav-icon" aria-hidden="true">👤</span>
+            <span>Profile</span>
+        </a>
+    </nav>
 
     <script src="assets/js/main.js"></script>
     <script>

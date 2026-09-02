@@ -7,9 +7,10 @@
     <title>DigiToken - Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/dashboard.css">
 </head>
 
-<body>
+<body class="dashboard-page">
     <nav class="navbar">
         <div class="nav-brand">
             <a href="index.html" style="color: inherit; display: flex; align-items: center; gap: 8px;">
@@ -157,19 +158,24 @@
     </style>
 
 
-    <!-- Quick Links Grid for Mobile/Desktop -->
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px;">
-        <div class="card" style="padding: 15px; text-align: center; cursor: pointer;"
-            onclick="window.location.href='notifications.html'">
-            <div style="font-size: 1.5rem; margin-bottom: 5px;">🔔</div>
-            <div style="font-weight: 600; font-size: 0.9rem;">Notifications</div>
-        </div>
-        <div class="card" style="padding: 15px; text-align: center; cursor: pointer;"
-            onclick="window.location.href='help.html'">
-            <div style="font-size: 1.5rem; margin-bottom: 5px;">🎧</div>
-            <div style="font-weight: 600; font-size: 0.9rem;">Help & Support</div>
-        </div>
-    </div>
+    <nav class="dashboard-bottom-nav" aria-label="Dashboard navigation">
+        <a class="dashboard-nav-item active" href="dashboard.html" aria-current="page">
+            <span class="dashboard-nav-icon" aria-hidden="true">🏠</span>
+            <span>Home</span>
+        </a>
+        <a class="dashboard-nav-item" href="notifications.html">
+            <span class="dashboard-nav-icon" aria-hidden="true">🔔</span>
+            <span>Alerts</span>
+        </a>
+        <a class="dashboard-nav-item" href="help.html">
+            <span class="dashboard-nav-icon" aria-hidden="true">💡</span>
+            <span>How it works</span>
+        </a>
+        <a class="dashboard-nav-item" href="profile.html">
+            <span class="dashboard-nav-icon" aria-hidden="true">👤</span>
+            <span>Profile</span>
+        </a>
+    </nav>
 
     <script src="assets/js/main.js"></script>
     <script>

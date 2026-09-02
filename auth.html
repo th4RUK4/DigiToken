@@ -52,7 +52,7 @@
 
 <body>
     <nav class="navbar">
-        <a href="index.html" class="nav-brand">
+        <a href="index.html" class="nav-brand" data-back>
             <img src="assets/img/logo.png" alt="DigiToken Logo" style="height: 32px;">
             <span style="font-weight: 700; font-size: 1.2rem; color: var(--primary-color);">DigiToken</span>
         </a>
@@ -142,10 +142,14 @@
                 <h3>Verify OTP</h3>
                 <p style="font-size: 0.9rem; color: var(--text-muted);">Enter the 4-digit code sent to your email.</p>
                 <div class="flex-center" style="gap: 10px; margin: 20px 0;">
-                    <input type="text" class="input-field" style="width: 50px; text-align: center;" maxlength="1">
-                    <input type="text" class="input-field" style="width: 50px; text-align: center;" maxlength="1">
-                    <input type="text" class="input-field" style="width: 50px; text-align: center;" maxlength="1">
-                    <input type="text" class="input-field" style="width: 50px; text-align: center;" maxlength="1">
+                    <input type="text" class="input-field otp-cell" inputmode="numeric" autocomplete="one-time-code"
+                        aria-label="OTP digit 1" maxlength="1">
+                    <input type="text" class="input-field otp-cell" inputmode="numeric" aria-label="OTP digit 2"
+                        maxlength="1">
+                    <input type="text" class="input-field otp-cell" inputmode="numeric" aria-label="OTP digit 3"
+                        maxlength="1">
+                    <input type="text" class="input-field otp-cell" inputmode="numeric" aria-label="OTP digit 4"
+                        maxlength="1">
                 </div>
                 <button onclick="handleVerify(event)" class="btn btn-primary">Verify & Proceed</button>
                 <div style="text-align: center; margin-top: 10px;">
@@ -206,6 +210,38 @@
         function handleVerify(e) {
             // Verify and go to dashboard
             window.location.href = 'dashboard.html';
+        }
+
+        const otpCells = [...document.querySelectorAll('.otp-cell')];
+
+        otpCells.forEach((cell, index) => {
+            cell.addEventListener('input', event => {
+                const digits = event.target.value.replace(/\D/g, '');
+                event.target.value = digits.slice(-1);
+                if (digits.length > 1) fillOtpFrom(index, digits);
+                else if (event.target.value && otpCells[index + 1]) otpCells[index + 1].focus();
+            });
+
+            cell.addEventListener('keydown', event => {
+                if (event.key === 'Backspace' && !cell.value && otpCells[index - 1]) {
+                    otpCells[index - 1].focus();
+                }
+                if (event.key === 'ArrowLeft' && otpCells[index - 1]) otpCells[index - 1].focus();
+                if (event.key === 'ArrowRight' && otpCells[index + 1]) otpCells[index + 1].focus();
+            });
+
+            cell.addEventListener('paste', event => {
+                event.preventDefault();
+                fillOtpFrom(index, event.clipboardData.getData('text').replace(/\D/g, ''));
+            });
+        });
+
+        function fillOtpFrom(startIndex, value) {
+            [...value].slice(0, otpCells.length - startIndex).forEach((digit, offset) => {
+                otpCells[startIndex + offset].value = digit;
+            });
+            const nextCell = otpCells[Math.min(startIndex + value.length, otpCells.length - 1)];
+            nextCell.focus();
         }
     </script>
 </body>
