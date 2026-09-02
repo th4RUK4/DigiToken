@@ -6,7 +6,21 @@
 document.addEventListener('DOMContentLoaded', () => {
     initTheme();
     initSplash();
+    initBackButtons();
 });
+
+function initBackButtons() {
+    document.querySelectorAll('[data-back]').forEach(button => {
+        button.addEventListener('click', event => {
+            event.preventDefault();
+            if (window.history.length > 1) {
+                window.history.back();
+                return;
+            }
+            window.location.href = button.getAttribute('href') || 'dashboard.html';
+        });
+    });
+}
 
 /* Theme Management */
 function initTheme() {

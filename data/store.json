@@ -1,0 +1,33 @@
+{
+  "tokens": [
+    {
+      "id": "A-14",
+      "type": "online",
+      "service": "Bank Service",
+      "status": "serving",
+      "time": "10:00 AM"
+    },
+    {
+      "id": "A-15",
+      "type": "online",
+      "service": "Bank Service",
+      "status": "waiting",
+      "time": "10:05 AM"
+    },
+    {
+      "id": "W-005",
+      "type": "walkin",
+      "service": "General",
+      "status": "waiting",
+      "time": "10:12 AM"
+    },
+    {
+      "id": "A-16",
+      "type": "online",
+      "service": "Bank Service",
+      "status": "waiting",
+      "time": "10:15 AM"
+    }
+  ],
+  "notifications": []
+}
