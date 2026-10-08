@@ -23,11 +23,18 @@ const MIME_TYPES = {
 };
 
 async function readStore() {
-  return JSON.parse(await fs.readFile(STORE_PATH, 'utf8'));
+  const raw = await fs.readFile(STORE_PATH, 'utf8');
+  const store = JSON.parse(raw);
+  if (!store || !Array.isArray(store.tokens) || !Array.isArray(store.notifications)) {
+    throw new Error('store has an invalid structure');
+  }
+  return store;
 }
 
 async function writeStore(store) {
-  await fs.writeFile(STORE_PATH, `${JSON.stringify(store, null, 2)}\n`);
+  const tempPath = `${STORE_PATH}.${process.pid}.tmp`;
+  await fs.writeFile(tempPath, `${JSON.stringify(store, null, 2)}\n`, { mode: 0o600 });
+  await fs.rename(tempPath, STORE_PATH);
 }
 
 function sendJson(response, status, payload) {
@@ -321,6 +328,15 @@ async function handleApi(request, response, pathname) {
 
   if (request.method === 'GET' && pathname === '/api/health') {
     return sendJson(response, 200, { ok: true, service: 'DigiToken API' });
+  }
+
+  if (request.method === 'GET' && pathname === '/api/ready') {
+    try {
+      await readStore();
+      return sendJson(response, 200, { ready: true });
+    } catch {
+      return sendJson(response, 503, { ready: false });
+    }
   }
 
   if (request.method === 'GET' && pathname === '/api/queue') {
