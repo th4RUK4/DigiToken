@@ -34,15 +34,57 @@ function broadcast(event, payload) {
   clients.forEach(client => client.write(message));
 }
 
+const MAX_BODY_SIZE = 64 * 1024;
+const TOKEN_TYPES = new Set(['walkin', 'online']);
+const NOTIFICATION_CHANNELS = new Set(['browser', 'email', 'sms']);
+
 async function readBody(request) {
   let body = '';
-  for await (const chunk of request) body += chunk;
+  for await (const chunk of request) {
+    body += chunk;
+    if (Buffer.byteLength(body, 'utf8') > MAX_BODY_SIZE) return null;
+  }
   if (!body) return {};
   try {
-    return JSON.parse(body);
+    const parsed = JSON.parse(body);
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : null;
   } catch {
     return null;
   }
+}
+
+function validateTokenInput(body) {
+  if (!body || typeof body !== 'object') return 'request body must be a JSON object';
+  if (!TOKEN_TYPES.has(body.type)) return 'type must be walkin or online';
+  if (typeof body.service !== 'string' || !body.service.trim()) return 'service is required';
+  if (body.service.trim().length > 100) return 'service must be 100 characters or fewer';
+  if (body.channel !== undefined && !NOTIFICATION_CHANNELS.has(body.channel)) {
+    return 'channel must be browser, email, or sms';
+  }
+  return null;
+}
+
+function validateStatusInput(body) {
+  const allowedStatuses = new Set(['waiting', 'serving', 'completed', 'no-show']);
+  if (!body || typeof body !== 'object') return 'request body must be a JSON object';
+  if (!allowedStatuses.has(body.status)) return 'invalid status';
+  if (body.channel !== undefined && !NOTIFICATION_CHANNELS.has(body.channel)) {
+    return 'channel must be browser, email, or sms';
+  }
+  return null;
+}
+
+function validateNotificationInput(body) {
+  if (!body || typeof body !== 'object') return 'request body must be a JSON object';
+  if (typeof body.message !== 'string' || !body.message.trim()) return 'message is required';
+  if (body.message.trim().length > 500) return 'message must be 500 characters or fewer';
+  if (body.tokenId !== undefined && body.tokenId !== null && typeof body.tokenId !== 'string') {
+    return 'tokenId must be a string';
+  }
+  if (body.channel !== undefined && !NOTIFICATION_CHANNELS.has(body.channel)) {
+    return 'channel must be browser, email, or sms';
+  }
+  return null;
 }
 
 function notificationFrom(tokenId, message, channel = 'browser') {
@@ -69,7 +111,120 @@ function getNextTokenSequence(tokens, prefix) {
   return tokens.reduce((highest, token) => {
     if (!token.id.startsWith(`${prefix}-`)) return highest;
 
-    const match = token.id.match(new RegExp(`^${prefix}-(\\\\d+)$`));
+    const match = token.id.match(new RegExp(`^${prefix}-(\\d+)const http = require('node:http');
+const fs = require('node:fs/promises');
+const path = require('node:path');
+const crypto = require('node:crypto');
+
+const PORT = Number(process.env.PORT) || 3000;
+const ROOT = __dirname;
+const STORE_PATH = path.join(ROOT, 'data', 'store.json');
+const clients = new Set();
+
+const MIME_TYPES = {
+  '.css': 'text/css; charset=utf-8',
+  '.html': 'text/html; charset=utf-8',
+  '.js': 'text/javascript; charset=utf-8',
+  '.json': 'application/json; charset=utf-8',
+  '.png': 'image/png'
+};
+
+async function readStore() {
+  return JSON.parse(await fs.readFile(STORE_PATH, 'utf8'));
+}
+
+async function writeStore(store) {
+  await fs.writeFile(STORE_PATH, `${JSON.stringify(store, null, 2)}\n`);
+}
+
+function sendJson(response, status, payload) {
+  response.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8' });
+  response.end(JSON.stringify(payload));
+}
+
+function broadcast(event, payload) {
+  const message = `event: ${event}\ndata: ${JSON.stringify(payload)}\n\n`;
+  clients.forEach(client => client.write(message));
+}
+
+const MAX_BODY_SIZE = 64 * 1024;
+const TOKEN_TYPES = new Set(['walkin', 'online']);
+const NOTIFICATION_CHANNELS = new Set(['browser', 'email', 'sms']);
+
+async function readBody(request) {
+  let body = '';
+  for await (const chunk of request) {
+    body += chunk;
+    if (Buffer.byteLength(body, 'utf8') > MAX_BODY_SIZE) return null;
+  }
+  if (!body) return {};
+  try {
+    const parsed = JSON.parse(body);
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+function validateTokenInput(body) {
+  if (!body || typeof body !== 'object') return 'request body must be a JSON object';
+  if (!TOKEN_TYPES.has(body.type)) return 'type must be walkin or online';
+  if (typeof body.service !== 'string' || !body.service.trim()) return 'service is required';
+  if (body.service.trim().length > 100) return 'service must be 100 characters or fewer';
+  if (body.channel !== undefined && !NOTIFICATION_CHANNELS.has(body.channel)) {
+    return 'channel must be browser, email, or sms';
+  }
+  return null;
+}
+
+function validateStatusInput(body) {
+  const allowedStatuses = new Set(['waiting', 'serving', 'completed', 'no-show']);
+  if (!body || typeof body !== 'object') return 'request body must be a JSON object';
+  if (!allowedStatuses.has(body.status)) return 'invalid status';
+  if (body.channel !== undefined && !NOTIFICATION_CHANNELS.has(body.channel)) {
+    return 'channel must be browser, email, or sms';
+  }
+  return null;
+}
+
+function validateNotificationInput(body) {
+  if (!body || typeof body !== 'object') return 'request body must be a JSON object';
+  if (typeof body.message !== 'string' || !body.message.trim()) return 'message is required';
+  if (body.message.trim().length > 500) return 'message must be 500 characters or fewer';
+  if (body.tokenId !== undefined && body.tokenId !== null && typeof body.tokenId !== 'string') {
+    return 'tokenId must be a string';
+  }
+  if (body.channel !== undefined && !NOTIFICATION_CHANNELS.has(body.channel)) {
+    return 'channel must be browser, email, or sms';
+  }
+  return null;
+}
+
+function notificationFrom(tokenId, message, channel = 'browser') {
+  return {
+    id: crypto.randomUUID(),
+    tokenId,
+    channel,
+    message,
+    status: 'delivered',
+    createdAt: new Date().toISOString()
+  };
+}
+
+async function createNotification(store, tokenId, message, channel) {
+  const notification = notificationFrom(tokenId, message, channel);
+  store.notifications.unshift(notification);
+  store.notifications = store.notifications.slice(0, 100);
+  await writeStore(store);
+  broadcast('notification', notification);
+  return notification;
+}
+
+function getNextTokenSequence(tokens, prefix) {
+  return tokens.reduce((highest, token) => {
+    if (!token.id.startsWith(`${prefix}-`)) return highest;
+
+    ));
     if (!match) return highest;
 
     return Math.max(highest, Number(match[1]));
@@ -105,14 +260,15 @@ async function handleApi(request, response, pathname) {
 
   if (request.method === 'POST' && pathname === '/api/tokens') {
     const body = await readBody(request);
-    if (!body || !body.service) return sendJson(response, 400, { error: 'service is required' });
+    const validationError = validateTokenInput(body);
+    if (validationError) return sendJson(response, 400, { error: validationError });
 
     const prefix = body.type === 'walkin' ? 'W' : 'A';
     const sequence = getNextTokenSequence(store.tokens, prefix);
     const token = {
       id: `${prefix}-${String(sequence).padStart(3, '0')}`,
       type: body.type === 'walkin' ? 'walkin' : 'online',
-      service: String(body.service),
+      service: body.service.trim(),
       status: 'waiting',
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
@@ -126,11 +282,11 @@ async function handleApi(request, response, pathname) {
   const statusMatch = pathname.match(/^\\/api\\/tokens\\/([^/]+)\\/status$/);
   if (request.method === 'PATCH' && statusMatch) {
     const body = await readBody(request);
+    const validationError = validateStatusInput(body);
+    if (validationError) return sendJson(response, 400, { error: validationError });
+
     const token = store.tokens.find(item => item.id === decodeURIComponent(statusMatch[1]));
     if (!token) return sendJson(response, 404, { error: 'token not found' });
-    if (!body || !['waiting', 'serving', 'completed', 'no-show'].includes(body.status)) {
-      return sendJson(response, 400, { error: 'invalid status' });
-    }
 
     if (body.status === 'serving') {
       store.tokens.forEach(item => {
@@ -150,8 +306,9 @@ async function handleApi(request, response, pathname) {
 
   if (request.method === 'POST' && pathname === '/api/notifications') {
     const body = await readBody(request);
-    if (!body || !body.message) return sendJson(response, 400, { error: 'message is required' });
-    const notification = await createNotification(store, body.tokenId || null, String(body.message), body.channel);
+    const validationError = validateNotificationInput(body);
+    if (validationError) return sendJson(response, 400, { error: validationError });
+    const notification = await createNotification(store, body.tokenId || null, body.message.trim(), body.channel);
     return sendJson(response, 201, notification);
   }
 
