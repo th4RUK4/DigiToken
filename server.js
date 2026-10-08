@@ -5,7 +5,7 @@ const crypto = require('node:crypto');
 
 const PORT = Number(process.env.PORT) || 3000;
 const ROOT = __dirname;
-const STORE_PATH = path.join(ROOT, 'data', 'store.json');
+const STORE_PATH = process.env.STORE_PATH || path.join(ROOT, 'data', 'store.json');
 const clients = new Set();
 
 const MIME_TYPES = {
@@ -337,6 +337,15 @@ const server = http.createServer(async (request, response) => {
   }
 });
 
-server.listen(PORT, () => {
-  console.log(`DigiToken running at http://localhost:${PORT}`);
-});
+if (require.main === module) {
+  server.listen(PORT, () => {
+    console.log(`DigiToken running at http://localhost:${PORT}`);
+  });
+}
+
+module.exports = {
+  getNextTokenSequence,
+  validateTokenInput,
+  validateStatusInput,
+  validateNotificationInput
+};
