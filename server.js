@@ -65,6 +65,17 @@ async function createNotification(store, tokenId, message, channel) {
   return notification;
 }
 
+function getNextTokenSequence(tokens, prefix) {
+  return tokens.reduce((highest, token) => {
+    if (!token.id.startsWith(`${prefix}-`)) return highest;
+
+    const match = token.id.match(new RegExp(`^${prefix}-(\\\\d+)$`));
+    if (!match) return highest;
+
+    return Math.max(highest, Number(match[1]));
+  }, 0) + 1;
+}
+
 async function handleApi(request, response, pathname) {
   const store = await readStore();
 
@@ -97,7 +108,7 @@ async function handleApi(request, response, pathname) {
     if (!body || !body.service) return sendJson(response, 400, { error: 'service is required' });
 
     const prefix = body.type === 'walkin' ? 'W' : 'A';
-    const sequence = store.tokens.filter(token => token.id.startsWith(`${prefix}-`)).length + 1;
+    const sequence = getNextTokenSequence(store.tokens, prefix);
     const token = {
       id: `${prefix}-${String(sequence).padStart(3, '0')}`,
       type: body.type === 'walkin' ? 'walkin' : 'online',
@@ -112,7 +123,7 @@ async function handleApi(request, response, pathname) {
     return sendJson(response, 201, token);
   }
 
-  const statusMatch = pathname.match(/^\/api\/tokens\/([^/]+)\/status$/);
+  const statusMatch = pathname.match(/^\\/api\\/tokens\\/([^/]+)\\/status$/);
   if (request.method === 'PATCH' && statusMatch) {
     const body = await readBody(request);
     const token = store.tokens.find(item => item.id === decodeURIComponent(statusMatch[1]));
