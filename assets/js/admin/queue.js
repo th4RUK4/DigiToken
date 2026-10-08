@@ -24,7 +24,12 @@ export async function updateStatus(id, newStatus) {
     if (state.backendAvailable) {
         const response = await fetch(`/api/tokens/${encodeURIComponent(id)}/status`, {
             method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                ...(sessionStorage.getItem('digitoken_admin_token')
+                    ? { Authorization: `Bearer ${sessionStorage.getItem('digitoken_admin_token')}` }
+                    : {})
+            },
             body: JSON.stringify({ status: newStatus, channel: 'browser' })
         });
         if (!response.ok) return alert('Unable to update this token.');
