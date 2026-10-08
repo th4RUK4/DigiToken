@@ -37,6 +37,7 @@ function broadcast(event, payload) {
 const MAX_BODY_SIZE = 64 * 1024;
 const TOKEN_TYPES = new Set(['walkin', 'online']);
 const NOTIFICATION_CHANNELS = new Set(['browser', 'email', 'sms']);
+const TOKEN_STATUSES = new Set(['waiting', 'serving', 'completed', 'no-show']);
 
 async function readBody(request) {
   let body = '';
@@ -65,9 +66,8 @@ function validateTokenInput(body) {
 }
 
 function validateStatusInput(body) {
-  const allowedStatuses = new Set(['waiting', 'serving', 'completed', 'no-show']);
   if (!body || typeof body !== 'object') return 'request body must be a JSON object';
-  if (!allowedStatuses.has(body.status)) return 'invalid status';
+  if (!TOKEN_STATUSES.has(body.status)) return 'invalid status';
   if (body.channel !== undefined && !NOTIFICATION_CHANNELS.has(body.channel)) {
     return 'channel must be browser, email, or sms';
   }
@@ -109,8 +109,7 @@ async function createNotification(store, tokenId, message, channel) {
 
 function getNextTokenSequence(tokens, prefix) {
   return tokens.reduce((highest, token) => {
-    if (!token.id.startsWith(`${prefix}-`)) return highest;
-
+    if (typeof token.id !== 'string') return highest;
     const match = token.id.match(new RegExp(`^${prefix}-(\\d+)const http = require('node:http');
 const fs = require('node:fs/promises');
 const path = require('node:path');
@@ -150,6 +149,7 @@ function broadcast(event, payload) {
 const MAX_BODY_SIZE = 64 * 1024;
 const TOKEN_TYPES = new Set(['walkin', 'online']);
 const NOTIFICATION_CHANNELS = new Set(['browser', 'email', 'sms']);
+const TOKEN_STATUSES = new Set(['waiting', 'serving', 'completed', 'no-show']);
 
 async function readBody(request) {
   let body = '';
@@ -178,9 +178,8 @@ function validateTokenInput(body) {
 }
 
 function validateStatusInput(body) {
-  const allowedStatuses = new Set(['waiting', 'serving', 'completed', 'no-show']);
   if (!body || typeof body !== 'object') return 'request body must be a JSON object';
-  if (!allowedStatuses.has(body.status)) return 'invalid status';
+  if (!TOKEN_STATUSES.has(body.status)) return 'invalid status';
   if (body.channel !== undefined && !NOTIFICATION_CHANNELS.has(body.channel)) {
     return 'channel must be browser, email, or sms';
   }
@@ -220,13 +219,8 @@ async function createNotification(store, tokenId, message, channel) {
   return notification;
 }
 
-function getNextTokenSequence(tokens, prefix) {
-  return tokens.reduce((highest, token) => {
-    if (!token.id.startsWith(`${prefix}-`)) return highest;
-
-    ));
+));
     if (!match) return highest;
-
     return Math.max(highest, Number(match[1]));
   }, 0) + 1;
 }
@@ -279,7 +273,7 @@ async function handleApi(request, response, pathname) {
     return sendJson(response, 201, token);
   }
 
-  const statusMatch = pathname.match(/^\\/api\\/tokens\\/([^/]+)\\/status$/);
+  const statusMatch = pathname.match(/^\/api\/tokens\/([^/]+)\/status$/);
   if (request.method === 'PATCH' && statusMatch) {
     const body = await readBody(request);
     const validationError = validateStatusInput(body);
