@@ -5,6 +5,12 @@ const crypto = require('node:crypto');
 
 const PORT = Number(process.env.PORT) || 3000;
 const ROOT = __dirname;
+const JWT_SECRET = process.env.JWT_SECRET || '';
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME || '';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '';
+const RATE_LIMIT_WINDOW_MS = 60 * 1000;
+const RATE_LIMIT_MAX = 60;
+const rateLimitStore = new Map();
 const STORE_PATH = process.env.STORE_PATH || path.join(ROOT, 'data', 'store.json');
 const clients = new Set();
 
@@ -25,8 +31,76 @@ async function writeStore(store) {
 }
 
 function sendJson(response, status, payload) {
-  response.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8' });
+  response.writeHead(status, {
+    'Content-Type': 'application/json; charset=utf-8',
+    'X-Content-Type-Options': 'nosniff',
+    'X-Frame-Options': 'DENY',
+    'Referrer-Policy': 'no-referrer'
+  });
   response.end(JSON.stringify(payload));
+}
+
+function rateLimit(request, response) {
+  const now = Date.now();
+  const key = request.socket.remoteAddress || 'unknown';
+  const current = rateLimitStore.get(key);
+
+  if (!current || now - current.startedAt >= RATE_LIMIT_WINDOW_MS) {
+    rateLimitStore.set(key, { startedAt: now, count: 1 });
+    return true;
+  }
+
+  current.count += 1;
+  if (current.count > RATE_LIMIT_MAX) {
+    response.setHeader('Retry-After', '60');
+    sendJson(response, 429, { error: 'too many requests' });
+    return false;
+  }
+
+  return true;
+}
+
+function base64Url(value) {
+  return Buffer.from(value).toString('base64url');
+}
+
+function createJwt(payload) {
+  const header = base64Url(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
+  const body = base64Url(JSON.stringify(payload));
+  const signature = crypto
+    .createHmac('sha256', JWT_SECRET)
+    .update(`${header}.${body}`)
+    .digest('base64url');
+  return `${header}.${body}.${signature}`;
+}
+
+function verifyJwt(token) {
+  if (!JWT_SECRET || typeof token !== 'string') return null;
+  const parts = token.split('.');
+  if (parts.length !== 3) return null;
+
+  const [header, body, signature] = parts;
+  const expected = crypto.createHmac('sha256', JWT_SECRET).update(`${header}.${body}`).digest('base64url');
+  if (signature.length !== expected.length || !crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected))) return null;
+
+  try {
+    const payload = JSON.parse(Buffer.from(body, 'base64url').toString('utf8'));
+    if (!payload.exp || payload.exp <= Math.floor(Date.now() / 1000)) return null;
+    return payload;
+  } catch {
+    return null;
+  }
+}
+
+function requireRole(request, response, role) {
+  const header = request.headers.authorization || '';
+  const token = header.startsWith('Bearer ') ? header.slice(7) : null;
+  const payload = verifyJwt(token);
+  if (!payload || payload.role !== role) {
+    sendJson(response, 401, { error: 'authentication required' });
+    return null;
+  }
+  return payload;
 }
 
 function broadcast(event, payload) {
@@ -226,7 +300,24 @@ async function createNotification(store, tokenId, message, channel) {
 }
 
 async function handleApi(request, response, pathname) {
+  if (!rateLimit(request, response)) return;
   const store = await readStore();
+
+  if (request.method === 'POST' && pathname === '/api/auth/login') {
+    const body = await readBody(request);
+    if (!JWT_SECRET || !ADMIN_USERNAME || !ADMIN_PASSWORD) {
+      return sendJson(response, 503, { error: 'authentication is not configured' });
+    }
+    if (!body || body.username !== ADMIN_USERNAME || body.password !== ADMIN_PASSWORD) {
+      return sendJson(response, 401, { error: 'invalid credentials' });
+    }
+    const token = createJwt({
+      sub: ADMIN_USERNAME,
+      role: 'admin',
+      exp: Math.floor(Date.now() / 1000) + 60 * 60 * 8
+    });
+    return sendJson(response, 200, { token, tokenType: 'Bearer', expiresIn: 28800 });
+  }
 
   if (request.method === 'GET' && pathname === '/api/health') {
     return sendJson(response, 200, { ok: true, service: 'DigiToken API' });
@@ -275,6 +366,7 @@ async function handleApi(request, response, pathname) {
 
   const statusMatch = pathname.match(/^\/api\/tokens\/([^/]+)\/status$/);
   if (request.method === 'PATCH' && statusMatch) {
+    if (!requireRole(request, response, 'admin')) return;
     const body = await readBody(request);
     const validationError = validateStatusInput(body);
     if (validationError) return sendJson(response, 400, { error: validationError });
@@ -299,6 +391,7 @@ async function handleApi(request, response, pathname) {
   }
 
   if (request.method === 'POST' && pathname === '/api/notifications') {
+    if (!requireRole(request, response, 'admin')) return;
     const body = await readBody(request);
     const validationError = validateNotificationInput(body);
     if (validationError) return sendJson(response, 400, { error: validationError });
