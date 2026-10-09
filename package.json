@@ -5,6 +5,10 @@
   "description": "DigiToken queue maintenance app",
   "scripts": {
     "start": "node server.js",
-    "check": "node --check server.js"
+    "check": "node --check server.js && node --check auth.js && node --check assets/js/auth-ui.js && node --check assets/js/profile-ui.js",
+    "test": "node --test auth.test.js profile-ui.test.js"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0"
   }
 }
