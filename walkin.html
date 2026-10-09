@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="assets/css/style.css">
     <style>
         .scanner-frame {
-            width: 80%;
+            width: min(100%, 360px);
             height: 300px;
             border: 2px dashed var(--primary-color);
             border-radius: 20px;
@@ -20,6 +20,37 @@
             position: relative;
             overflow: hidden;
             margin: 20px auto;
+        }
+
+        .scanner-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+
+        .scanner-frame.is-active .scanner-video {
+            display: block;
+        }
+
+        .scanner-frame.is-active .scanner-message,
+        .scanner-frame.is-active .scan-line {
+            display: none;
+        }
+
+        .scanner-message {
+            padding: 20px;
+        }
+
+        .scanner-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .scanner-actions .btn {
+            width: auto;
+            padding: 12px 18px;
         }
 
         .scan-line {
@@ -66,13 +97,21 @@
             <h2>Scan QR Code</h2>
             <p style="color: var(--text-muted);">Point your camera at the counter QR code.</p>
 
-            <div class="scanner-frame" onclick="simulateScan()">
+            <div id="scanner-frame" class="scanner-frame">
+                <video id="scanner-video" class="scanner-video" autoplay muted playsinline></video>
                 <div class="scan-line"></div>
-                <p style="color: var(--text-muted);">Scanning...</p>
-                <p style="position: absolute; bottom: 10px; font-size: 0.8rem; opacity: 0.7;">(Tap to Simulate)</p>
+                <div class="scanner-message">
+                    <p id="scanner-status" style="color: var(--text-muted);">Camera is ready to scan.</p>
+                    <p style="font-size: 0.8rem; opacity: 0.7;">Allow camera access, then point it at a QR code.</p>
+                </div>
             </div>
 
-            <button class="btn btn-ghost" onclick="window.history.back()">Cancel</button>
+            <div class="scanner-actions">
+                <button id="start-scanner" class="btn btn-primary" type="button">Start Camera</button>
+                <button id="stop-scanner" class="btn btn-outline" type="button" hidden>Stop Camera</button>
+            </div>
+            <button id="simulate-scan" class="btn btn-ghost" type="button" hidden>Use Demo QR</button>
+            <a class="btn btn-ghost" href="dashboard.html" data-back>Cancel</a>
         </div>
 
         <!-- STEP 2: PROCESSING -->
@@ -109,11 +148,11 @@
                 <h2 style="color: var(--success-color); margin-bottom: 5px;">Token Generated!</h2>
                 <p style="font-weight: 600; color: var(--text-muted);">Your Token Number</p>
 
-                <div class="big-token" style="color: var(--success-color); text-shadow: none;">W-99</div>
+                <div class="big-token" style="color: var(--success-color); text-shadow: none;">—</div>
 
                 <div style="background: rgba(3, 152, 85, 0.1); padding: 10px; border-radius: 8px; margin-top: 20px;">
                     <div style="margin-bottom: 5px; font-size: 1.2rem; color: var(--text-main);">Position:
-                        <strong>5th</strong></div>
+                        <strong id="walkin-position">—</strong></div>
                     <p style="color: var(--success-color); font-size: 0.9rem; margin: 0; font-weight: 500;">Please wait
                         for your number.</p>
                 </div>
@@ -141,17 +180,122 @@
     </div>
 
     <script src="assets/js/main.js"></script>
+    <script src="assets/js/api.js"></script>
     <script>
-        function simulateScan() {
+        const { apiRequest: apiFetch, requireAuth, formatPosition } = window.DigiTokenApi;
+        const scannerFrame = document.getElementById('scanner-frame');
+        const scannerVideo = document.getElementById('scanner-video');
+        const scannerStatus = document.getElementById('scanner-status');
+        const startScannerButton = document.getElementById('start-scanner');
+        const stopScannerButton = document.getElementById('stop-scanner');
+        const simulateScanButton = document.getElementById('simulate-scan');
+        let scannerStream;
+        let scanAnimationFrame;
+        let scannerBusy = false;
+        const qrDetector = 'BarcodeDetector' in window
+            ? new BarcodeDetector({ formats: ['qr_code'] })
+            : null;
+
+        requireAuth();
+
+        startScannerButton.addEventListener('click', startScanner);
+        stopScannerButton.addEventListener('click', stopScanner);
+        simulateScanButton.addEventListener('click', () => handleScan('digitoken://counter?service=General%20Enquiry'));
+
+        async function startScanner() {
+            if (!('BarcodeDetector' in window)) {
+                scannerStatus.innerText = 'QR scanning is not supported in this browser.';
+                simulateScanButton.hidden = false;
+                return;
+            }
+
+            if (!navigator.mediaDevices?.getUserMedia) {
+                scannerStatus.innerText = 'Camera access is unavailable. Use the demo QR instead.';
+                simulateScanButton.hidden = false;
+                return;
+            }
+
+            try {
+                scannerStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: { ideal: 'environment' } },
+                    audio: false
+                });
+                scannerVideo.srcObject = scannerStream;
+                scannerFrame.classList.add('is-active');
+                startScannerButton.hidden = true;
+                stopScannerButton.hidden = false;
+                scannerStatus.innerText = 'Scanning for a QR code...';
+                scanFrame();
+            } catch (error) {
+                scannerStatus.innerText = error.name === 'NotAllowedError'
+                    ? 'Camera permission was denied. Use the demo QR instead.'
+                    : 'Could not start the camera. Use the demo QR instead.';
+                simulateScanButton.hidden = false;
+            }
+        }
+
+        async function scanFrame() {
+            if (!scannerStream || scannerBusy) return;
+            try {
+                const codes = await qrDetector.detect(scannerVideo);
+                if (codes.length > 0) {
+                    scannerBusy = true;
+                    stopScanner();
+                    handleScan(codes[0].rawValue);
+                    return;
+                }
+            } catch (error) {
+                scannerStatus.innerText = 'Unable to read this QR code. Try again.';
+            }
+            scanAnimationFrame = requestAnimationFrame(scanFrame);
+        }
+
+        function stopScanner() {
+            if (scanAnimationFrame) cancelAnimationFrame(scanAnimationFrame);
+            scannerStream?.getTracks().forEach(track => track.stop());
+            scannerStream = null;
+            scannerVideo.srcObject = null;
+            scannerFrame.classList.remove('is-active');
+            startScannerButton.hidden = false;
+            stopScannerButton.hidden = true;
+            scannerBusy = false;
+        }
+
+        async function handleScan(rawValue) {
+            stopScanner();
             document.getElementById('step-scan').classList.add('hidden');
             document.getElementById('step-processing').classList.remove('hidden');
+            const service = getServiceFromQr(rawValue);
 
-            // Simulate API delay
+            try {
+                const token = await apiRequest('/api/tokens', {
+                    method: 'POST',
+                    body: { type: 'walkin', service, channel: 'browser' }
+                });
+                document.querySelector('#step-token .big-token').innerText = token.id;
+                document.getElementById('walkin-position').textContent = formatPosition(token.position);
+            } catch (error) {
+                scannerStatus.innerText = error.message || 'Unable to create token.';
+                document.getElementById('step-processing').classList.add('hidden');
+                document.getElementById('step-scan').classList.remove('hidden');
+                return;
+            }
+
             setTimeout(() => {
                 document.getElementById('step-processing').classList.add('hidden');
                 document.getElementById('step-token').classList.remove('hidden');
-            }, 1500);
+            }, 700);
         }
+
+        function getServiceFromQr(rawValue) {
+            try {
+                const url = new URL(rawValue);
+                return url.searchParams.get('service') || 'General Enquiry';
+            } catch (error) {
+                return 'General Enquiry';
+            }
+        }
+
     </script>
 </body>
 

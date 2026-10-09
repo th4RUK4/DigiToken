@@ -7,9 +7,10 @@
     <title>DigiToken - Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/dashboard.css">
 </head>
 
-<body>
+<body class="dashboard-page">
     <nav class="navbar">
         <div class="nav-brand">
             <a href="index.html" style="color: inherit; display: flex; align-items: center; gap: 8px;">
@@ -17,176 +18,192 @@
             </a>
         </div>
         <div style="display: flex; align-items: center; gap: 15px;">
-            <!-- Profile Icon Placeholder -->
-            <!-- Profile Icon Button -->
-            <button onclick="window.location.href='profile.html'"
-                style="width: 32px; height: 32px; background: var(--primary-color); border: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.8rem; cursor: pointer; transition: transform 0.2s;"
-                onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1.0)'"
-                aria-label="Profile">
-                JP
-            </button>
+            <button id="profile-chip" onclick="window.location.href='profile.html'"
+                style="width: 32px; height: 32px; background: var(--primary-color); border: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.8rem; cursor: pointer;"
+                aria-label="Open profile">?</button>
             <button id="theme-toggle" class="theme-toggle">🌙</button>
         </div>
     </nav>
 
     <div class="container container-dashboard">
-
-        <!-- Welcome Header -->
         <header style="margin-bottom: 20px; margin-top: 60px;">
-            <h2>Hello, Janith! 👋</h2>
+            <h2 id="greeting">Hello!</h2>
             <p style="color: var(--text-muted);">Here is your queue status today.</p>
         </header>
 
-        <!-- Active Token Card -->
-        <div class="card"
-            style="border: 2px solid var(--primary-color); position: relative; overflow: hidden; margin-bottom: 20px;">
-            <!-- Decorative BG Blur -->
-            <div
-                style="position: absolute; top: -50%; right: -50%; width: 200px; height: 200px; background: var(--primary-color); opacity: 0.1; border-radius: 50%; filter: blur(40px);">
-            </div>
+        <div id="dash-status" class="status-banner" hidden></div>
 
+        <div id="active-token-card" class="card"
+            style="border: 2px solid var(--primary-color); position: relative; overflow: hidden; margin-bottom: 20px;">
             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
-                <span
+                <span id="token-status-pill"
                     style="font-size: 0.9rem; font-weight: 600; color: var(--primary-color); background: rgba(0, 86, 210, 0.1); padding: 4px 10px; border-radius: 20px;">
-                    ● Active
+                    Loading…
                 </span>
-                <span style="font-size: 0.8rem; color: var(--text-muted);">Bank Service</span>
+                <span id="token-service" style="font-size: 0.8rem; color: var(--text-muted);"></span>
             </div>
 
             <div style="text-align: center; margin: 20px 0;">
-                <div style="font-size: 3.5rem; font-weight: 800; color: var(--text-main); line-height: 1;">A-15</div>
+                <div id="token-number" style="font-size: 3.5rem; font-weight: 800; color: var(--text-main); line-height: 1;">—</div>
                 <p style="color: var(--text-muted); font-size: 0.9rem;">Your Token Number</p>
             </div>
 
             <div
-                style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; border-top: 1px solid var(--border-color); padding-top: 15px;">
+                style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; border-top: 1px solid var(--border-color); padding-top: 15px;">
                 <div style="text-align: center;">
-                    <div style="font-size: 1.2rem; font-weight: 700;">3rd</div>
+                    <div id="token-position" style="font-size: 1.2rem; font-weight: 700;">—</div>
                     <div style="font-size: 0.8rem; color: var(--text-muted);">In Line</div>
                 </div>
                 <div style="text-align: center;">
-                    <div style="font-size: 1.2rem; font-weight: 700;">~10m</div>
-                    <div style="font-size: 0.8rem; color: var(--text-muted);">Estimated Wait</div>
+                    <div id="token-wait" style="font-size: 1.2rem; font-weight: 700;">—</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);">Est. Wait</div>
+                </div>
+                <div style="text-align: center;">
+                    <div id="now-serving" style="font-size: 1.2rem; font-weight: 700;">—</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);">Now Serving</div>
                 </div>
             </div>
         </div>
 
-        <!-- Actions -->
         <h3 style="font-size: 1.1rem; margin-bottom: 15px;">Quick Actions</h3>
         <div class="space-y-4">
-            <a href="service.html" class="btn btn-primary">
-                ➕ Book New Token
-            </a>
-
-            <!-- Notification Settings (Mini) -->
+            <a href="service.html" class="btn btn-primary">➕ Book New Token</a>
+            <a href="walkin.html" class="btn btn-outline">Walk-in QR Token</a>
             <div class="card" style="padding: 15px;">
-                <h4 style="font-size: 1rem; margin-bottom: 15px;">Notifications</h4>
-
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <span>📧</span>
-                        <span style="font-size: 0.9rem;">Email Alerts</span>
-                    </div>
-                    <label class="switch">
-                        <input type="checkbox" checked>
-                        <span class="slider round"></span>
-                    </label>
-                </div>
-
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <span>💬</span>
-                        <span style="font-size: 0.9rem;">WhatsApp</span>
-                    </div>
-                    <label class="switch">
-                        <input type="checkbox">
-                        <span class="slider round"></span>
-                    </label>
-                </div>
+                <h4 style="font-size: 1rem; margin-bottom: 8px;">Browser alerts</h4>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">
+                    Enable browser alerts to see queue updates while this page is open. Email and WhatsApp delivery are not configured.
+                </p>
+                <button id="enable-browser-notifications" type="button" class="btn btn-outline">Enable browser alerts</button>
+                <p id="browser-notification-status" role="status" aria-live="polite" style="font-size: 0.85rem; color: var(--text-muted); margin: 8px 0 12px;"></p>
+                <a href="notifications.html" class="btn btn-ghost">Open notification history</a>
             </div>
         </div>
-
     </div>
 
-    <!-- Toggle Switch CSS (Local for now) -->
-    <style>
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 40px;
-            height: 24px;
-        }
-
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: var(--border-color);
-            transition: .4s;
-            border-radius: 24px;
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 18px;
-            width: 18px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-
-        input:checked+.slider {
-            background-color: var(--success-color);
-        }
-
-        input:checked+.slider:before {
-            transform: translateX(16px);
-        }
-    </style>
-
-
-    <!-- Quick Links Grid for Mobile/Desktop -->
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px;">
-        <div class="card" style="padding: 15px; text-align: center; cursor: pointer;"
-            onclick="window.location.href='notifications.html'">
-            <div style="font-size: 1.5rem; margin-bottom: 5px;">🔔</div>
-            <div style="font-weight: 600; font-size: 0.9rem;">Notifications</div>
-        </div>
-        <div class="card" style="padding: 15px; text-align: center; cursor: pointer;"
-            onclick="window.location.href='help.html'">
-            <div style="font-size: 1.5rem; margin-bottom: 5px;">🎧</div>
-            <div style="font-weight: 600; font-size: 0.9rem;">Help & Support</div>
-        </div>
-    </div>
+    <nav class="dashboard-bottom-nav" aria-label="Dashboard navigation">
+        <a class="dashboard-nav-item active" href="dashboard.html" aria-current="page">
+            <span class="dashboard-nav-icon" aria-hidden="true">🏠</span>
+            <span>Home</span>
+        </a>
+        <a class="dashboard-nav-item" href="notifications.html">
+            <span class="dashboard-nav-icon" aria-hidden="true">🔔</span>
+            <span>Alerts</span>
+        </a>
+        <a class="dashboard-nav-item" href="help.html">
+            <span class="dashboard-nav-icon" aria-hidden="true">💡</span>
+            <span>How it works</span>
+        </a>
+        <a class="dashboard-nav-item" href="profile.html">
+            <span class="dashboard-nav-icon" aria-hidden="true">👤</span>
+            <span>Profile</span>
+        </a>
+    </nav>
 
     <script src="assets/js/main.js"></script>
+    <script src="assets/js/api.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const profile = JSON.parse(localStorage.getItem('userProfile'));
-            if (profile) {
-                // Update Greeting
-                const greetingEl = document.querySelector('header h2');
-                if (greetingEl) {
-                    greetingEl.innerText = `Hello, ${profile.firstName}! 👋`;
-                }
+        const {
+            apiRequest,
+            requireAuth,
+            subscribeEvents,
+            showStatus,
+            initialsFor,
+            activeTokenFromMine,
+            formatPosition
+        } = window.DigiTokenApi;
 
-                // Update Nav Button
-                const navBtn = document.querySelector('button[aria-label="Profile"]');
-                if (navBtn) {
-                    navBtn.innerText = `${profile.firstName[0]}${profile.lastName[0]}`;
-                }
+        let latestQueue = { tokens: [], mine: [], nowServing: null };
+
+        function renderDashboard() {
+            const token = activeTokenFromMine(latestQueue.mine);
+            const nowServing = latestQueue.nowServing;
+            document.getElementById('now-serving').textContent = nowServing ? nowServing.id : '—';
+
+            if (!token) {
+                document.getElementById('token-status-pill').textContent = 'No active token';
+                document.getElementById('token-service').textContent = '';
+                document.getElementById('token-number').textContent = '—';
+                document.getElementById('token-position').textContent = '—';
+                document.getElementById('token-wait').textContent = '—';
+                showStatus(document.getElementById('dash-status'), 'Book a token to join the live queue.', 'info');
+                return;
+            }
+
+            showStatus(document.getElementById('dash-status'), '');
+            document.getElementById('token-status-pill').textContent = `● ${token.status}`;
+            document.getElementById('token-service').textContent = token.service || '';
+            document.getElementById('token-number').textContent = token.id;
+            document.getElementById('token-position').textContent = formatPosition(token.position);
+            document.getElementById('token-wait').textContent = token.status === 'serving'
+                ? 'Now'
+                : `~${token.waitMinutes ?? 0}m`;
+        }
+
+        function updateBrowserNotificationStatus() {
+            const status = document.getElementById('browser-notification-status');
+            const button = document.getElementById('enable-browser-notifications');
+            if (!('Notification' in window)) {
+                status.textContent = 'Browser notifications are not supported here.';
+                button.disabled = true;
+            } else if (Notification.permission === 'granted') {
+                status.textContent = 'Browser alerts are enabled.';
+                button.disabled = true;
+            } else if (Notification.permission === 'denied') {
+                status.textContent = 'Notifications are blocked in browser settings.';
+                button.disabled = true;
+            } else {
+                status.textContent = 'Allow browser permission to receive queue alerts.';
+            }
+        }
+
+        document.getElementById('enable-browser-notifications').addEventListener('click', async () => {
+            if (!('Notification' in window)) return updateBrowserNotificationStatus();
+            try {
+                await Notification.requestPermission();
+            } finally {
+                updateBrowserNotificationStatus();
+            }
+        });
+
+        async function loadQueue() {
+            latestQueue = await apiRequest('/api/queue');
+            renderDashboard();
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = await requireAuth();
+            if (!user) return;
+
+            updateBrowserNotificationStatus();
+
+            const fullName = [user.firstName, user.lastName].filter(Boolean).join(' ').trim();
+            const profileLabel = fullName || user.email;
+            document.getElementById('greeting').textContent = `Hello, ${user.firstName || user.email}!`;
+            const profileChip = document.getElementById('profile-chip');
+            profileChip.textContent = initialsFor(user);
+            profileChip.title = profileLabel;
+            profileChip.setAttribute('aria-label', `Open profile for ${profileLabel}`);
+
+            try {
+                showStatus(document.getElementById('dash-status'), 'Loading queue…', 'info');
+                await loadQueue();
+                subscribeEvents({
+                    onQueueUpdated: async () => {
+                        try {
+                            await loadQueue();
+                        } catch (error) {
+                            showStatus(document.getElementById('dash-status'), error.message, 'error');
+                        }
+                    },
+                    onNotification: notification => {
+                        if (notification.channel === 'browser' && 'Notification' in window && Notification.permission === 'granted') {
+                            new Notification('DigiToken queue update', { body: notification.message });
+                        }
+                    }
+                });
+            } catch (error) {
+                showStatus(document.getElementById('dash-status'), error.message, 'error');
             }
         });
     </script>

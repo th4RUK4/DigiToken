@@ -7,20 +7,13 @@
     <title>DigiToken - Admin</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/admin.css">
     <style>
         body {
             padding-bottom: 60px;
         }
 
         /* Mobile nav spacing */
-
-        .admin-stat-card {
-            background: var(--surface-color);
-            padding: 15px;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            text-align: center;
-        }
 
         .queue-control {
             display: grid;
@@ -65,8 +58,25 @@
         }
 
         .nav-icon {
-            font-size: 1.25rem;
+            width: 1.25rem;
+            height: 1.25rem;
             margin-bottom: 2px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .admin-icon {
+            width: 1.1em;
+            height: 1.1em;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            vertical-align: -0.15em;
         }
 
         .view-section {
@@ -77,24 +87,32 @@
             display: block;
             animation: fadeIn 0.3s ease;
         }
+
+        @media (min-width: 700px) {
+            .container {
+                max-width: 900px;
+            }
+
+        }
     </style>
 </head>
 
-<body>
+<body class="admin-page">
     <nav class="navbar">
         <div class="nav-brand">
-            <span>🛡️ Admin Panel</span>
+            <span><svg class="admin-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 19 6v5c0 4.8-2.9 8.2-7 10-4.1-1.8-7-5.2-7-10V6l7-3Z"/><path d="m9 12 2 2 4-4"/></svg> Admin Panel</span>
         </div>
         <div style="display: flex; align-items: center; gap: 10px;">
             <a href="display.html" target="_blank" class="btn btn-outline"
                 style="padding: 6px 12px; font-size: 0.8rem; width: auto;">
-                📺 Public Display
+                <svg class="admin-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8m-4-4v4"/></svg> Public Display
             </a>
-            <button id="theme-toggle" class="theme-toggle">🌙</button>
+            <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme"></button>
         </div>
     </nav>
 
     <div class="container" style="padding-top: 80px; height: auto;">
+        <div id="admin-status" class="status-banner" hidden></div>
 
         <!-- DASHBOARD VIEW -->
         <div id="view-dashboard" class="view-section active">
@@ -102,16 +120,16 @@
 
             <div class="card" style="text-align: center; border-color: var(--primary-color); margin-bottom: 20px;">
                 <div style="color: var(--text-muted); font-size: 0.9rem;">Now Serving</div>
-                <div style="font-size: 3.5rem; font-weight: 800; color: var(--primary-color);">A-14</div>
-                <div style="color: var(--success-color); font-weight: 600;">Counter 1</div>
+                <div id="now-serving-token" style="font-size: 3.5rem; font-weight: 800; color: var(--primary-color);">—</div>
+                <div id="now-serving-status" style="color: var(--success-color); font-weight: 600;">No token is being served</div>
             </div>
 
             <div class="queue-control">
                 <button class="btn btn-primary" style="background-color: var(--success-color);"
                     onclick="callNextToken()">
-                    🔔 Call Next
+                    <svg class="admin-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg> Call Next
                 </button>
-                <button class="btn btn-outline" style="border-color: var(--error-color); color: var(--error-color);">
+                <button id="no-show-button" class="btn btn-outline" style="border-color: var(--error-color); color: var(--error-color);" disabled>
                     ❌ No Show
                 </button>
             </div>
@@ -122,15 +140,8 @@
             </button>
 
             <h3 style="margin-top: 30px; margin-bottom: 15px;">Queue Preview</h3>
-            <div class="space-y-4">
-                <div class="token-list-item" style="border-radius: 8px;">
-                    <span style="font-weight: 700;">A-15</span>
-                    <span style="color: var(--text-muted);">Waiting (5m)</span>
-                </div>
-                <div class="token-list-item" style="border-radius: 8px;">
-                    <span style="font-weight: 700;">B-09</span>
-                    <span style="color: var(--text-muted);">Waiting (12m)</span>
-                </div>
+            <div id="queue-preview" class="space-y-4" aria-live="polite">
+                <p style="color: var(--text-muted); padding: 12px;">No one is waiting.</p>
             </div>
         </div>
 
@@ -144,7 +155,7 @@
                     <div>
                         <h4 style="margin-bottom: 5px;">Walk-In Customer</h4>
                         <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0;">Next: <strong
-                                id="next-walkin">W-001</strong></p>
+                                id="next-walkin">—</strong></p>
                     </div>
                     <button onclick="generateWalkIn()" class="btn btn-primary"
                         style="width: auto; padding: 10px 20px; background-color: #F59E0B;">
@@ -168,32 +179,6 @@
                 </div>
             </div>
 
-            <!-- Demo Controls (Hidden from User, for testing) -->
-            <div style="opacity: 0.5; margin-top: 30px; text-align: center; font-size: 0.7rem;">
-                <button onclick="simulateOnlineBooking()"
-                    style="background: none; border: 1px dashed #ccc; padding: 5px;">Simulate Online Booking
-                    (A-xx)</button>
-            </div>
-        </div>
-
-        <!-- ANALYTICS VIEW -->
-        <div id="view-analytics" class="view-section">
-            <h2 style="margin-bottom: 15px;">Daily Analytics</h2>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
-                <div class="admin-stat-card">
-                    <div style="font-size: 1.5rem; font-weight: 700;">142</div>
-                    <div style="font-size: 0.8rem; color: var(--text-muted);">Total Tokens</div>
-                </div>
-                <div class="admin-stat-card">
-                    <div style="font-size: 1.5rem; font-weight: 700;">8m</div>
-                    <div style="font-size: 0.8rem; color: var(--text-muted);">Avg Wait</div>
-                </div>
-            </div>
-
-            <div class="card"
-                style="height: 200px; display: flex; align-items: center; justify-content: center; color: var(--text-muted);">
-                [Chart Placeholder]
-            </div>
         </div>
 
         <!-- SETTINGS VIEW -->
@@ -202,24 +187,25 @@
             <div class="card space-y-6">
                 <div>
                     <h4 style="margin-bottom: 10px;">Notifications</h4>
+                    <button id="enable-browser-notifications" class="btn btn-outline"
+                        style="font-size: 0.9rem; margin-bottom: 12px;">Enable Browser Notifications</button>
                     <div
                         style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                        <span>Enable Email System</span>
-                        <input type="checkbox" checked>
+                        <span>Email notifications</span>
+                        <span style="color: var(--text-muted);">Not configured</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span>Enable WhatsApp System</span>
-                        <input type="checkbox" checked>
+                        <span>WhatsApp notifications</span>
+                        <span style="color: var(--text-muted);">Not configured</span>
                     </div>
                 </div>
 
                 <div>
                     <h4 style="margin-bottom: 10px;">Services</h4>
-                    <button class="btn btn-outline" style="font-size: 0.9rem;">Manage Services & QRs</button>
+                    <span style="color: var(--text-muted);">Service management is not available yet.</span>
                 </div>
 
-                <button class="btn btn-ghost" style="color: var(--error-color);"
-                    onclick="window.location.href='index.html'">
+                <button id="logout-button" type="button" class="btn btn-ghost" style="color: var(--error-color);">
                     Log Out
                 </button>
             </div>
@@ -229,177 +215,22 @@
 
     <!-- Bottom Nav -->
     <div class="bottom-nav">
-        <div class="nav-item active" onclick="switchAdminTab('dashboard', this)">
-            <span class="nav-icon">📊</span>
+        <button type="button" class="nav-item active" data-view="dashboard" aria-current="page">
+            <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5m0 14h17"/><path d="m7 15 4-4 3 2 6-7"/></svg>
             <span>Queue</span>
-        </div>
-        <div class="nav-item" onclick="switchAdminTab('tokens', this)">
-            <span class="nav-icon">📝</span>
+        </button>
+        <button type="button" class="nav-item" data-view="tokens">
+            <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h8l4 4v14H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/><path d="M14 3v5h5M9 13h6m-6 4h6"/></svg>
             <span>Tokens</span>
-        </div>
-        <div class="nav-item" onclick="switchAdminTab('analytics', this)">
-            <span class="nav-icon">📈</span>
-            <span>Stats</span>
-        </div>
-        <div class="nav-item" onclick="switchAdminTab('settings', this)">
-            <span class="nav-icon">⚙️</span>
+        </button>
+        <button type="button" class="nav-item" data-view="settings">
+            <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z"/><path d="m19.4 15 .1.1 1.2.9-1.2 2.1-1.4-.5a8 8 0 0 1-1.7 1l-.2 1.5h-2.4l-.3-1.5a8 8 0 0 1-1.8-.7l-1.3.7-1.4-2 1-1.1a7 7 0 0 1-.2-2l-1.2-.9 1.2-2.1 1.4.5a8 8 0 0 1 1.7-1l.2-1.5h2.4l.3 1.5a8 8 0 0 1 1.8.7l1.3-.7 1.4 2-1 1.1c.2.7.2 1.3.1 2Z"/></svg>
             <span>Settings</span>
-        </div>
+        </button>
     </div>
 
     <script src="assets/js/main.js"></script>
-    <script>
-        // State
-        let tokens = [
-            { id: 'A-14', type: 'online', service: 'Bank Service', status: 'serving', time: '10:00 AM' },
-            { id: 'A-15', type: 'online', service: 'Bank Service', status: 'waiting', time: '10:05 AM' },
-            { id: 'W-005', type: 'walkin', service: 'General', status: 'waiting', time: '10:12 AM' },
-            { id: 'A-16', type: 'online', service: 'Bank Service', status: 'waiting', time: '10:15 AM' }
-        ];
-
-        let nextWalkIn = 6;
-        let nextOnline = 17;
-
-        // Init
-        document.addEventListener('DOMContentLoaded', () => {
-            renderTokens();
-            updateNextWalkInLabel();
-        });
-
-        function switchAdminTab(viewId, navEl) {
-            // Update Nav
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            navEl.classList.add('active');
-
-            // Update View
-            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-            document.getElementById('view-' + viewId).classList.add('active');
-        }
-
-        /* Token Management Logic */
-
-        function renderTokens() {
-            const listEl = document.getElementById('token-list');
-            const countEl = document.getElementById('queue-count');
-
-            if (!listEl) return;
-
-            // Filter out completed for the main list (simulated)
-            const activeTokens = tokens.filter(t => t.status !== 'completed');
-            countEl.innerText = activeTokens.filter(t => t.status === 'waiting').length;
-
-            listEl.innerHTML = activeTokens.map(t => {
-                const isOnline = t.type === 'online';
-                const badgeClass = isOnline ? 'badge-online' : 'badge-walkin';
-                const typeLabel = isOnline ? 'Pre-Booked' : 'Walk-In';
-
-                let actionBtn = '';
-                if (t.status === 'waiting') {
-                    actionBtn = `<button onclick="updateStatus('${t.id}', 'serving')" class="btn btn-outline" style="padding: 5px 10px; font-size: 0.75rem; width: auto;">Serve</button>`;
-                } else if (t.status === 'serving') {
-                    actionBtn = `<button onclick="updateStatus('${t.id}', 'completed')" class="btn btn-primary" style="padding: 5px 10px; font-size: 0.75rem; width: auto; background-color: var(--success-color);">Done</button>`;
-                }
-
-                return `
-                <div class="token-list-item" style="align-items: center;">
-                    <div style="flex: 1;">
-                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
-                            <span style="font-weight: 700; font-size: 1.1rem;">${t.id}</span>
-                            <span class="badge ${badgeClass}">${typeLabel}</span>
-                        </div>
-                        <div style="font-size: 0.8rem; color: var(--text-muted);">
-                            ${t.service} • ${t.time}
-                        </div>
-                    </div>
-                    <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 5px;">
-                        <span class="badge ${t.status === 'serving' ? 'badge-status-serving' : 'badge-status-waiting'}">
-                            ${t.status.charAt(0).toUpperCase() + t.status.slice(1)}
-                        </span>
-                        ${actionBtn}
-                    </div>
-                </div>
-                `;
-            }).join('');
-        }
-
-        function generateWalkIn() {
-            const id = `W-${String(nextWalkIn).padStart(3, '0')}`;
-            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-            const newToken = {
-                id: id,
-                type: 'walkin',
-                status: 'waiting',
-                service: 'General Enquiry',
-                time: time
-            };
-
-            tokens.push(newToken);
-            nextWalkIn++;
-
-            updateNextWalkInLabel();
-            renderTokens();
-
-            // Optional: Show quick feedback
-            alert(`Token ${id} Generated!`);
-        }
-
-        function simulateOnlineBooking() {
-            const id = `A-${nextOnline}`;
-            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-            tokens.push({
-                id: id,
-                type: 'online',
-                status: 'waiting',
-                service: 'Bank Service',
-                time: time
-            });
-            nextOnline++;
-            renderTokens();
-        }
-
-        function updateStatus(id, newStatus) {
-            const index = tokens.findIndex(t => t.id === id);
-            if (index !== -1) {
-                // If serving, ensure no others are serving (simple logic)
-                if (newStatus === 'serving') {
-                    tokens.forEach(t => {
-                        if (t.status === 'serving') t.status = 'completed'; // Auto complete previous
-                    });
-                }
-                tokens[index].status = newStatus;
-                renderTokens();
-                updateDashboardNowServing();
-            }
-        }
-
-        function callNextToken() {
-            // Find first waiting token
-            const nextToken = tokens.find(t => t.status === 'waiting');
-            if (nextToken) {
-                updateStatus(nextToken.id, 'serving');
-                // Optional: visual feedback or sound
-            } else {
-                alert('No tokens waiting in queue.');
-            }
-        }
-
-        function updateDashboardNowServing() {
-            const serving = tokens.find(t => t.status === 'serving');
-            if (serving) {
-                // Update Dashboard View Elements
-                const nowServingNumber = document.querySelector('#view-dashboard .card div:nth-child(2)');
-                if (nowServingNumber) nowServingNumber.innerText = serving.id;
-            }
-        }
-
-        function updateNextWalkInLabel() {
-            const el = document.getElementById('next-walkin');
-            if (el) el.innerText = `W-${String(nextWalkIn).padStart(3, '0')}`;
-        }
-
-    </script>
+    <script type="module" src="assets/js/admin/app.js"></script>
 </body>
 
 </html>
