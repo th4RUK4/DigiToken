@@ -120,8 +120,8 @@
         <!-- LEFT: NOW SERVING -->
         <div class="main-panel">
             <div class="now-serving-label">Now Serving</div>
-            <div class="huge-token">A-14</div>
-            <div class="counter-info">Counter 01</div>
+            <div id="now-serving-token" class="huge-token">—</div>
+            <div id="now-serving-service" class="counter-info">No token is being served</div>
         </div>
 
         <!-- RIGHT: UPCOMING -->
@@ -132,30 +132,12 @@
                     style="font-size: 0.8rem; border: 1px solid var(--display-line); padding: 4px 8px; border-radius: 4px; display: flex; align-items: center; gap: 5px;">
                     <span
                         style="display: block; width: 6px; height: 6px; background-color: var(--success-color); border-radius: 50%; box-shadow: 0 0 5px var(--success-color);"></span>
-                    Live Updates
+                    <span id="connection-status">Connecting…</span>
                 </span>
             </div>
 
-            <div class="next-item">
-                <span>A-15</span>
-                <div style="text-align: right;">
-                    <span style="font-size: 1.5rem; color: var(--display-muted); display: block;">Waiting</span>
-                    <span style="font-size: 0.9rem; color: var(--display-muted);">~5 mins</span>
-                </div>
-            </div>
-            <div class="next-item">
-                <span>B-09</span>
-                <div style="text-align: right;">
-                    <span style="font-size: 1.5rem; color: var(--display-muted); display: block;">Waiting</span>
-                    <span style="font-size: 0.9rem; color: var(--display-muted);">~12 mins</span>
-                </div>
-            </div>
-            <div class="next-item">
-                <span>A-16</span>
-                <div style="text-align: right;">
-                    <span style="font-size: 1.5rem; color: var(--display-muted); display: block;">Waiting</span>
-                    <span style="font-size: 0.9rem; color: var(--display-muted);">~18 mins</span>
-                </div>
+            <div id="up-next-list" aria-live="polite">
+                <p style="color: var(--display-muted);">No tokens are waiting.</p>
             </div>
 
             <div style="margin-top: auto; text-align: center; color: var(--display-muted); opacity: 0.75;">
@@ -166,7 +148,48 @@
     </div>
 
     <script>
-        // Simple Clock
+        async function updateQueueDisplay() {
+            const status = document.getElementById('connection-status');
+            try {
+                const response = await fetch('/api/public/queue', { cache: 'no-store' });
+                if (!response.ok) throw new Error('Queue unavailable');
+                const queue = await response.json();
+                document.getElementById('now-serving-token').textContent = queue.nowServing?.id || '—';
+                document.getElementById('now-serving-service').textContent = queue.nowServing?.service || 'No token is being served';
+
+                const list = document.getElementById('up-next-list');
+                if (!queue.upNext.length) {
+                    list.innerHTML = '<p style="color: var(--display-muted);">No tokens are waiting.</p>';
+                } else {
+                    list.replaceChildren(...queue.upNext.map(token => {
+                        const row = document.createElement('div');
+                        row.className = 'next-item';
+                        const id = document.createElement('span');
+                        id.textContent = token.id;
+                        const details = document.createElement('div');
+                        details.style.textAlign = 'right';
+                        const tokenStatus = document.createElement('span');
+                        tokenStatus.style.cssText = 'font-size: 1.5rem; color: var(--display-muted); display: block;';
+                        tokenStatus.textContent = token.status === 'called' ? 'Called' : 'Waiting';
+                        const wait = document.createElement('span');
+                        wait.style.cssText = 'font-size: 0.9rem; color: var(--display-muted);';
+                        wait.textContent = `~${token.waitMinutes} mins`;
+                        details.append(tokenStatus, wait);
+                        row.append(id, details);
+                        return row;
+                    }));
+                }
+                status.textContent = 'Live';
+                status.style.color = 'var(--success-color)';
+            } catch {
+                status.textContent = 'Reconnecting…';
+                status.style.color = 'var(--display-highlight)';
+            }
+        }
+
+        updateQueueDisplay();
+        setInterval(updateQueueDisplay, 5000);
+
         setInterval(() => {
             const now = new Date();
             document.getElementById('clock').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });

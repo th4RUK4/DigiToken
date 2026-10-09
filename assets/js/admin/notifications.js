@@ -12,13 +12,24 @@ export function initLiveNotifications({ onQueueUpdated, enabled }) {
 }
 
 export async function enableBrowserNotifications() {
+    const el = document.getElementById('admin-status');
     if (!('Notification' in window)) {
-        alert('Browser notifications are not supported here.');
+        if (el) {
+            el.hidden = false;
+            el.dataset.status = 'error';
+            el.textContent = 'Browser notifications are not supported here.';
+        }
         return;
     }
 
     const permission = await Notification.requestPermission();
-    alert(permission === 'granted' ? 'Browser notifications enabled.' : 'Browser notifications were not enabled.');
+    if (el) {
+        el.hidden = false;
+        el.dataset.status = permission === 'granted' ? 'success' : 'info';
+        el.textContent = permission === 'granted'
+            ? 'Browser notifications enabled.'
+            : 'Browser notifications were not enabled.';
+    }
 }
 
 function showBrowserNotification(message) {

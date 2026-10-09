@@ -64,134 +64,82 @@
 <body>
     <nav class="navbar">
         <a href="dashboard.html" class="nav-brand" data-back>
-            <!-- Back Arrow -->
             <span style="font-size: 1.2rem;">←</span> Book Service
         </a>
         <button id="theme-toggle" class="theme-toggle">🌙</button>
     </nav>
 
     <div class="container" style="padding-top: 80px;">
+        <div id="book-status" class="status-banner" hidden></div>
 
-        <!-- STEP 1: SERVICE SELECT -->
         <div id="step-1" class="view active">
             <h2 style="margin-bottom: 20px;">Select Service</h2>
             <div class="service-grid">
-                <div class="service-card" onclick="selectService('Banking')">
+                <button type="button" class="service-card" data-service="Banking">
                     <span class="service-icon">🏦</span>
                     Banking
-                </div>
-                <div class="service-card" onclick="selectService('Medical')">
+                </button>
+                <button type="button" class="service-card" data-service="Medical">
                     <span class="service-icon">⚕️</span>
                     Medical
-                </div>
-                <div class="service-card" onclick="selectService('Government')">
+                </button>
+                <button type="button" class="service-card" data-service="Government">
                     <span class="service-icon">🏛️</span>
                     Government
-                </div>
-                <div class="service-card" onclick="selectService('Utility')">
+                </button>
+                <button type="button" class="service-card" data-service="Utility">
                     <span class="service-icon">⚡</span>
                     Utility Bill
-                </div>
+                </button>
             </div>
         </div>
 
-        <!-- STEP 2: DATE & TIME -->
         <div id="step-2" class="view">
             <h2 style="margin-bottom: 20px;">Select Time</h2>
-
             <div class="space-y-4">
                 <div>
                     <label style="display: block; margin-bottom: 8px; color: var(--text-muted);">Date</label>
-                    <input type="date" class="input-field">
+                    <input id="booking-date" type="date" class="input-field">
                 </div>
-
                 <div>
-                    <label style="display: block; margin-bottom: 8px; color: var(--text-muted);">Available Slots</label>
-
-                    <div style="display: flex; gap: 15px; margin-bottom: 10px; font-size: 0.8rem;">
-                        <div style="display: flex; align-items: center; gap: 5px;">
-                            <div
-                                style="width: 12px; height: 12px; border: 1px solid var(--primary-color); border-radius: 2px;">
-                            </div>
-                            <span>Available</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 5px;">
-                            <div
-                                style="width: 12px; height: 12px; background: #eee; border: 1px solid #ddd; border-radius: 2px;">
-                            </div>
-                            <span style="color: var(--text-muted);">Booked</span>
-                        </div>
-                    </div>
-
-                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
-                        <!-- Booked (Light/Disabled) -->
-                        <div class="time-slot disabled"
-                            style="background: #f5f5f5; color: #aaa; border-color: #eee; cursor: not-allowed; opacity: 0.7;">
-                            09:00 AM</div>
-
-                        <!-- Available -->
-                        <div class="time-slot" onclick="selectTime(this)">09:15 AM</div>
-                        <div class="time-slot" onclick="selectTime(this)">09:30 AM</div>
-
-                        <!-- Booked -->
-                        <div class="time-slot disabled"
-                            style="background: #f5f5f5; color: #aaa; border-color: #eee; cursor: not-allowed; opacity: 0.7;">
-                            09:45 AM</div>
-
-                        <!-- Available -->
-                        <div class="time-slot" onclick="selectTime(this)">10:00 AM</div>
-                        <div class="time-slot" onclick="selectTime(this)">10:15 AM</div>
-                        <div class="time-slot" onclick="selectTime(this)">10:30 AM</div>
-                        <div class="time-slot" onclick="selectTime(this)">10:45 AM</div>
-
-                        <!-- Booked/Full -->
-                        <div class="time-slot disabled"
-                            style="background: #f5f5f5; color: #aaa; border-color: #eee; cursor: not-allowed; opacity: 0.7;">
-                            11:00 AM</div>
+                    <label style="display: block; margin-bottom: 8px; color: var(--text-muted);">Preferred slot</label>
+                    <div id="time-slots" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+                        <div class="time-slot" data-time="09:15 AM">09:15 AM</div>
+                        <div class="time-slot" data-time="09:30 AM">09:30 AM</div>
+                        <div class="time-slot" data-time="10:00 AM">10:00 AM</div>
+                        <div class="time-slot" data-time="10:15 AM">10:15 AM</div>
+                        <div class="time-slot" data-time="10:30 AM">10:30 AM</div>
+                        <div class="time-slot" data-time="10:45 AM">10:45 AM</div>
                     </div>
                 </div>
             </div>
-
             <div style="margin-top: 30px; display: flex; gap: 10px;">
-                <button class="btn btn-ghost" onclick="showStep(1)">Back</button>
-                <button class="btn btn-primary" onclick="showStep(3)">Continue</button>
+                <button class="btn btn-ghost" type="button" data-step="1">Back</button>
+                <button class="btn btn-primary" type="button" id="continue-confirm">Continue</button>
             </div>
         </div>
 
-        <!-- STEP 3: CONFIRM -->
         <div id="step-3" class="view">
             <h2 style="margin-bottom: 20px;">Confirm Details</h2>
-
             <div class="card space-y-4">
                 <div>
                     <div style="color: var(--text-muted); font-size: 0.9rem;">Service</div>
-                    <div style="font-weight: 600; font-size: 1.1rem;" id="confirm-service">Banking</div>
+                    <div style="font-weight: 600; font-size: 1.1rem;" id="confirm-service">—</div>
                 </div>
                 <div>
-                    <div style="color: var(--text-muted); font-size: 0.9rem;">Date & Time</div>
-                    <div style="font-weight: 600;">Aug 24, 2026 • 10:30 AM</div>
+                    <div style="color: var(--text-muted); font-size: 0.9rem;">Preferred time</div>
+                    <div style="font-weight: 600;" id="confirm-when">As soon as available</div>
                 </div>
-
-                <div style="border-top: 1px solid var(--border-color); padding-top: 15px;">
-                    <div
-                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                        <span>🔔 Notify via Email</span>
-                        <input type="checkbox" checked>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span>📱 Notify via WhatsApp</span>
-                        <input type="checkbox" checked>
-                    </div>
-                </div>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">
+                    Booking joins the live queue immediately. The selected date and time are display preferences and do not reserve a slot.
+                </p>
             </div>
-
             <div style="margin-top: 30px; display: flex; gap: 10px;">
-                <button class="btn btn-ghost" onclick="showStep(2)">Back</button>
-                <button class="btn btn-primary" onclick="showStep(4)">Confirm Booking</button>
+                <button class="btn btn-ghost" type="button" data-step="2">Back</button>
+                <button class="btn btn-primary" type="button" id="confirm-booking">Confirm Booking</button>
             </div>
         </div>
 
-        <!-- STEP 4: SUCCESS -->
         <div id="step-4" class="view" style="text-align: center;">
             <div
                 style="width: 60px; height: 60px; background: var(--success-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; color: white; font-size: 1.5rem;">
@@ -199,41 +147,97 @@
             </div>
             <h2>Token Generated!</h2>
             <p style="color: var(--text-muted);">You have successfully joined the queue.</p>
-
             <div class="card" style="margin: 30px 0; border: 2px solid var(--primary-color);">
-                <div style="font-size: 4rem; font-weight: 800; color: var(--primary-color);">B-42</div>
-                <div>Queue Position: 12</div>
+                <div id="success-token" style="font-size: 4rem; font-weight: 800; color: var(--primary-color);">—</div>
+                <div id="success-position">Queue Position: —</div>
             </div>
-
             <a href="dashboard.html" class="btn btn-primary">Go to Dashboard</a>
         </div>
-
     </div>
 
     <script src="assets/js/main.js"></script>
+    <script src="assets/js/api.js"></script>
     <script>
+        const { apiRequest: apiFetch, requireAuth, showStatus: showMessage } = window.DigiTokenApi;
+        const statusEl = document.getElementById('book-status');
         let selectedService = '';
+        let selectedTime = '';
 
         function showStep(n) {
             document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
             document.getElementById('step-' + n).classList.add('active');
         }
 
-        function selectService(name) {
-            selectedService = name;
-            document.getElementById('confirm-service').innerText = name;
-
-            // Highlight logic (visual only for now)
-            document.querySelectorAll('.service-card').forEach(c => c.classList.remove('selected'));
-            event.currentTarget.classList.add('selected');
-
-            setTimeout(() => showStep(2), 300);
+        function refreshConfirm() {
+            document.getElementById('confirm-service').textContent = selectedService || '—';
+            const date = document.getElementById('booking-date').value;
+            document.getElementById('confirm-when').textContent = selectedTime
+                ? `${date || 'Today'} • ${selectedTime}`
+                : 'As soon as available';
         }
 
-        function selectTime(el) {
-            document.querySelectorAll('.time-slot').forEach(t => t.classList.remove('selected'));
-            el.classList.add('selected');
-        }
+        document.querySelectorAll('.service-card').forEach(card => {
+            card.addEventListener('click', () => {
+                selectedService = card.dataset.service;
+                document.querySelectorAll('.service-card').forEach(item => item.classList.remove('selected'));
+                card.classList.add('selected');
+                refreshConfirm();
+                setTimeout(() => showStep(2), 200);
+            });
+        });
+
+        document.querySelectorAll('.time-slot').forEach(slot => {
+            slot.addEventListener('click', () => {
+                selectedTime = slot.dataset.time;
+                document.querySelectorAll('.time-slot').forEach(item => item.classList.remove('selected'));
+                slot.classList.add('selected');
+                refreshConfirm();
+            });
+        });
+
+        document.querySelectorAll('[data-step]').forEach(button => {
+            button.addEventListener('click', () => showStep(Number(button.dataset.step)));
+        });
+
+        document.getElementById('continue-confirm').addEventListener('click', () => {
+            if (!selectedService) {
+                showMessage(statusEl, 'Select a service first.', 'error');
+                showStep(1);
+                return;
+            }
+            refreshConfirm();
+            showStep(3);
+        });
+
+        document.getElementById('confirm-booking').addEventListener('click', async () => {
+            const button = document.getElementById('confirm-booking');
+            button.disabled = true;
+            showMessage(statusEl, 'Creating token…', 'info');
+            try {
+                const token = await apiFetch('/api/tokens', {
+                    method: 'POST',
+                    body: {
+                        type: 'online',
+                        service: selectedService,
+                        channel: 'browser'
+                    }
+                });
+                document.getElementById('success-token').textContent = token.id;
+                document.getElementById('success-position').textContent = `Queue Position: ${token.position || '—'}`;
+                showMessage(statusEl, '');
+                showStep(4);
+            } catch (error) {
+                showMessage(statusEl, error.message, 'error');
+                button.disabled = false;
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = await requireAuth();
+            if (!user) return;
+            const dateInput = document.getElementById('booking-date');
+            dateInput.value = new Date().toISOString().slice(0, 10);
+        });
     </script>
 </body>
 

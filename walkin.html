@@ -148,11 +148,11 @@
                 <h2 style="color: var(--success-color); margin-bottom: 5px;">Token Generated!</h2>
                 <p style="font-weight: 600; color: var(--text-muted);">Your Token Number</p>
 
-                <div class="big-token" style="color: var(--success-color); text-shadow: none;">W-99</div>
+                <div class="big-token" style="color: var(--success-color); text-shadow: none;">—</div>
 
                 <div style="background: rgba(3, 152, 85, 0.1); padding: 10px; border-radius: 8px; margin-top: 20px;">
                     <div style="margin-bottom: 5px; font-size: 1.2rem; color: var(--text-main);">Position:
-                        <strong>5th</strong></div>
+                        <strong id="walkin-position">—</strong></div>
                     <p style="color: var(--success-color); font-size: 0.9rem; margin: 0; font-weight: 500;">Please wait
                         for your number.</p>
                 </div>
@@ -180,7 +180,9 @@
     </div>
 
     <script src="assets/js/main.js"></script>
+    <script src="assets/js/api.js"></script>
     <script>
+        const { apiRequest: apiFetch, requireAuth, formatPosition } = window.DigiTokenApi;
         const scannerFrame = document.getElementById('scanner-frame');
         const scannerVideo = document.getElementById('scanner-video');
         const scannerStatus = document.getElementById('scanner-status');
@@ -193,6 +195,8 @@
         const qrDetector = 'BarcodeDetector' in window
             ? new BarcodeDetector({ formats: ['qr_code'] })
             : null;
+
+        requireAuth();
 
         startScannerButton.addEventListener('click', startScanner);
         stopScannerButton.addEventListener('click', stopScanner);
@@ -264,17 +268,17 @@
             const service = getServiceFromQr(rawValue);
 
             try {
-                const response = await fetch('/api/tokens', {
+                const token = await apiRequest('/api/tokens', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ type: 'walkin', service, channel: 'browser' })
+                    body: { type: 'walkin', service, channel: 'browser' }
                 });
-                if (response.ok) {
-                    const token = await response.json();
-                    document.querySelector('#step-token .big-token').innerText = token.id;
-                }
+                document.querySelector('#step-token .big-token').innerText = token.id;
+                document.getElementById('walkin-position').textContent = formatPosition(token.position);
             } catch (error) {
-                // Direct file usage keeps the original demo token.
+                scannerStatus.innerText = error.message || 'Unable to create token.';
+                document.getElementById('step-processing').classList.add('hidden');
+                document.getElementById('step-scan').classList.remove('hidden');
+                return;
             }
 
             setTimeout(() => {
