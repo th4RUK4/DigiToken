@@ -15,11 +15,17 @@
 
         .faq-question {
             padding: 15px 0;
-            font-weight: 600;
             cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            width: 100%;
+            border: 0;
+            background: transparent;
+            color: inherit;
+            font: inherit;
+            font-weight: 600;
+            text-align: left;
         }
 
         .faq-answer {
@@ -68,10 +74,8 @@
         <div class="support-card">
             <div style="font-size: 2rem; margin-bottom: 10px;">🎧</div>
             <h2 style="margin-bottom: 5px;">Need Assistance?</h2>
-            <p style="opacity: 0.9; margin-bottom: 15px;">Our support team is available 24/7 for you.</p>
-            <button class="btn"
-                style="background: white; color: var(--primary-color); width: auto; font-weight: 600;">Contact
-                Support</button>
+            <p style="opacity: 0.9; margin-bottom: 15px;">For help with a token, speak with staff at your service center.</p>
+            <p style="font-size: 0.9rem; margin-bottom: 0;">Online support contact details are not configured yet.</p>
         </div>
 
         <div class="card">
@@ -79,10 +83,10 @@
 
             <div class="faq-list">
                 <div class="faq-item">
-                    <div class="faq-question" onclick="toggleFaq(this)">
+                    <button type="button" class="faq-question" aria-expanded="false">
                         How do I get a token?
                         <span class="faq-icon">▼</span>
-                    </div>
+                    </button>
                     <div class="faq-answer">
                         You can get a token in two ways:
                         <ul style="margin-left: 20px; margin-top: 5px;">
@@ -95,10 +99,10 @@
                 </div>
 
                 <div class="faq-item">
-                    <div class="faq-question" onclick="toggleFaq(this)">
+                    <button type="button" class="faq-question" aria-expanded="false">
                         What happens if I'm late?
                         <span class="faq-icon">▼</span>
-                    </div>
+                    </button>
                     <div class="faq-answer">
                         If you miss your called number, please report to the service desk immediately. We might be able
                         to slot you in as a "No Show" recovery, or you may need to take a new Walk-in token.
@@ -106,12 +110,12 @@
                 </div>
 
                 <div class="faq-item">
-                    <div class="faq-question" onclick="toggleFaq(this)">
+                    <button type="button" class="faq-question" aria-expanded="false">
                         How do notifications work?
                         <span class="faq-icon">▼</span>
-                    </div>
+                    </button>
                     <div class="faq-answer">
-                        We send updates via Email and WhatsApp (if enabled). You will receive alerts when:
+                        Browser notifications can show updates when enabled. Email and WhatsApp delivery are not configured yet. Queue updates include:
                         <ol style="margin-left: 20px; margin-top: 5px;">
                             <li>Your token is generated.</li>
                             <li>There are 5 people ahead of you.</li>
@@ -121,13 +125,12 @@
                 </div>
 
                 <div class="faq-item">
-                    <div class="faq-question" onclick="toggleFaq(this)">
+                    <button type="button" class="faq-question" aria-expanded="false">
                         Can I cancel my token?
                         <span class="faq-icon">▼</span>
-                    </div>
+                    </button>
                     <div class="faq-answer">
-                        Yes, you can cancel your pending token from the "Recent Activity" section in your Dashboard.
-                        This helps us serve others faster!
+                        Token cancellation is not available from the dashboard yet. Please speak with staff at your service center.
                     </div>
                 </div>
             </div>
@@ -160,9 +163,13 @@
 
     <script src="assets/js/main.js"></script>
     <script>
-        function toggleFaq(el) {
-            el.parentElement.classList.toggle('active');
-        }
+        document.querySelectorAll('.faq-question').forEach(button => {
+            button.addEventListener('click', () => {
+                const expanded = button.getAttribute('aria-expanded') === 'true';
+                button.setAttribute('aria-expanded', String(!expanded));
+                button.parentElement.classList.toggle('active', !expanded);
+            });
+        });
     </script>
 </body>
 

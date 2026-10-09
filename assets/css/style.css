@@ -321,3 +321,40 @@ a {
 .hidden {
     display: none !important;
 }
+
+.status-banner {
+    margin: 12px 0;
+    padding: 10px 12px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    border: 1px solid var(--border-color);
+    background: var(--accent-color);
+    color: var(--text-main);
+}
+
+.status-banner[data-status="error"] {
+    background: rgba(217, 45, 32, 0.1);
+    border-color: rgba(217, 45, 32, 0.35);
+    color: var(--error-color);
+}
+
+.status-banner[data-status="success"] {
+    background: rgba(3, 152, 85, 0.1);
+    border-color: rgba(3, 152, 85, 0.35);
+    color: var(--success-color);
+}
+
+.status-banner[data-status="info"] {
+    background: var(--accent-color);
+}
+
+.coming-soon {
+    opacity: 0.55;
+    cursor: not-allowed !important;
+}
+
+.btn:disabled,
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
