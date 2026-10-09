@@ -8,18 +8,40 @@ From the `DigiToken` directory:
 npm start
 ```
 
-Open <http://localhost:3000/admin.html> in the browser. The server also serves the existing static pages.
+Open <http://localhost:3000/>. Auth is required for customer and admin pages.
 
-## API
+Configure a local PostgreSQL database in `.env` using `DATABASE_URL`, then set the seeded admin credentials:
 
-- `GET /api/health` checks that the service is running.
-- `GET /api/queue` returns the current queue.
-- `POST /api/tokens` creates a token. Send `type`, `service`, and optionally `channel`.
-- `PATCH /api/tokens/:id/status` changes a token to `waiting`, `serving`, `completed`, or `no-show`.
-- `GET /api/notifications` returns notification history.
-- `POST /api/notifications` sends a notification event. Send `message`, plus optional `tokenId` and `channel`.
-- `GET /api/events` provides live server-sent events for queue updates and notifications.
+- `ADMIN_EMAIL`
+- `ADMIN_PASSWORD`
 
-Queue and notification data is stored in `data/store.json`. The admin page uses the API when served by Node and falls back to its demo behavior when opened directly as a file.
+At startup, the app creates the PostgreSQL schema and imports legacy rows from `data/store.json` idempotently. Passwords are hashed with bcrypt. Existing scrypt hashes are verified for compatibility and upgraded after successful login.
 
-The current delivery channel is browser notifications through the live event stream. Email, WhatsApp, SMS, or push-provider delivery requires provider credentials and can be added inside `createNotification` in `server.js`.
+## Auth
+
+Sessions use an httpOnly cookie named `digitoken_session`.
+
+- `POST /api/auth/signup` — `{ firstName, lastName, email, password, phone? }` → sets session, role `user`
+- `POST /api/auth/login` — `{ email, password }` → sets session; the stored account role determines the destination and authorization level
+- `POST /api/auth/logout` — clears session
+- `GET /api/auth/me` — current user
+- `PATCH /api/auth/profile` — `{ firstName?, lastName?, phone? }`
+
+Passwords are hashed with bcrypt (see `auth.js`). Sessions use httpOnly cookies and are held in the running server process.
+
+## Queue API
+
+All of these require a valid session unless noted.
+
+- `GET /api/health` — public health check
+- `GET /api/public/queue` — public display data only (current token and up to five upcoming token IDs/statuses)
+- `GET /api/queue` — full queue plus `mine` (caller’s tokens with `position` / `waitMinutes` for non-admins) and `nowServing`
+- `POST /api/tokens` — create a token for the logged-in user (`type`, `service`, optional `channel`)
+- `PATCH /api/tokens/:id/status` — **admin only**; status: `waiting`, `called`, `serving`, `completed`, `no-show`, `cancelled`
+- `GET /api/notifications` — caller’s notifications (all for admin)
+- `POST /api/notifications` — **admin only**
+- `GET /api/events` — SSE stream for `queue-updated` and `notification`
+
+Users, tokens, notifications, and token counters are stored in PostgreSQL. `data/store.json` is retained as a one-way import source for legacy data.
+
+Browser notifications are delivered through the live event stream. Email, WhatsApp, SMS, or push-provider delivery requires provider credentials.

@@ -15,14 +15,6 @@
 
         /* Mobile nav spacing */
 
-        .admin-stat-card {
-            background: var(--surface-color);
-            padding: 15px;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            text-align: center;
-        }
-
         .queue-control {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -66,8 +58,25 @@
         }
 
         .nav-icon {
-            font-size: 1.25rem;
+            width: 1.25rem;
+            height: 1.25rem;
             margin-bottom: 2px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .admin-icon {
+            width: 1.1em;
+            height: 1.1em;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            vertical-align: -0.15em;
         }
 
         .view-section {
@@ -79,240 +88,11 @@
             animation: fadeIn 0.3s ease;
         }
 
-        .analytics-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .analytics-stat {
-            text-align: left;
-            padding: 16px;
-        }
-
-        .analytics-stat-value {
-            display: block;
-            font-size: 1.6rem;
-            line-height: 1.2;
-            margin-bottom: 5px;
-        }
-
-        .analytics-stat-change {
-            color: var(--success-color);
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .analytics-stat-change.neutral {
-            color: var(--text-muted);
-        }
-
-        .chart-grid {
-            display: grid;
-            gap: 15px;
-        }
-
-        .chart-card {
-            padding: 18px;
-        }
-
-        .chart-heading {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .chart-heading h3 {
-            margin-bottom: 4px;
-        }
-
-        .chart-subtitle {
-            color: var(--text-muted);
-            font-size: 0.75rem;
-        }
-
-        .chart-legend {
-            display: flex;
-            gap: 10px;
-            color: var(--text-muted);
-            font-size: 0.7rem;
-            white-space: nowrap;
-        }
-
-        .legend-dot {
-            display: inline-block;
-            width: 7px;
-            height: 7px;
-            margin-right: 4px;
-            border-radius: 50%;
-            background: var(--primary-color);
-        }
-
-        .legend-dot.amber {
-            background: #F59E0B;
-        }
-
-        .bar-chart {
-            display: flex;
-            align-items: flex-end;
-            justify-content: space-between;
-            height: 155px;
-            gap: 8px;
-            padding: 0 2px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .bar-column {
-            display: flex;
-            flex: 1;
-            height: 100%;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-end;
-            gap: 7px;
-        }
-
-        .bar {
-            width: min(24px, 75%);
-            min-height: 10px;
-            border-radius: 5px 5px 0 0;
-            background: linear-gradient(180deg, var(--primary-color), rgba(127, 86, 217, 0.45));
-        }
-
-        .bar-label {
-            color: var(--text-muted);
-            font-size: 0.65rem;
-            transform: translateY(22px);
-        }
-
-        .donut-layout {
-            display: flex;
-            align-items: center;
-            gap: 22px;
-        }
-
-        .donut {
-            flex: 0 0 126px;
-            width: 126px;
-            height: 126px;
-            border-radius: 50%;
-            background: conic-gradient(var(--primary-color) 0 58%, #F59E0B 58% 83%, var(--success-color) 83% 100%);
-            position: relative;
-        }
-
-        .donut::after {
-            content: '';
-            position: absolute;
-            inset: 23px;
-            border-radius: 50%;
-            background: var(--surface-color);
-        }
-
-        .donut-label {
-            position: absolute;
-            inset: 0;
-            z-index: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-            font-weight: 700;
-        }
-
-        .donut-label small {
-            color: var(--text-muted);
-            font-size: 0.65rem;
-            font-weight: 400;
-        }
-
-        .chart-key {
-            display: grid;
-            gap: 12px;
-            width: 100%;
-        }
-
-        .key-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            color: var(--text-muted);
-            font-size: 0.78rem;
-        }
-
-        .key-name {
-            color: var(--text-main);
-        }
-
-        .key-color {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            margin-right: 6px;
-            border-radius: 2px;
-            background: var(--primary-color);
-        }
-
-        .key-color.amber {
-            background: #F59E0B;
-        }
-
-        .key-color.green {
-            background: var(--success-color);
-        }
-
-        .line-chart {
-            display: block;
-            width: 100%;
-            height: 145px;
-            overflow: visible;
-        }
-
-        .line-grid {
-            stroke: var(--border-color);
-            stroke-dasharray: 3 4;
-            stroke-width: 1;
-        }
-
-        .line-path {
-            fill: none;
-            stroke: var(--primary-color);
-            stroke-linecap: round;
-            stroke-linejoin: round;
-            stroke-width: 3;
-        }
-
-        .line-point {
-            fill: var(--surface-color);
-            stroke: var(--primary-color);
-            stroke-width: 2;
-        }
-
-        .line-label {
-            fill: var(--text-muted);
-            font-size: 9px;
-        }
-
         @media (min-width: 700px) {
             .container {
                 max-width: 900px;
             }
 
-            .analytics-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-
-            .chart-grid {
-                grid-template-columns: 1.35fr 1fr;
-            }
-
-            .chart-card:first-child,
-            .chart-card:last-child {
-                grid-column: span 2;
-            }
         }
     </style>
 </head>
@@ -320,18 +100,19 @@
 <body class="admin-page">
     <nav class="navbar">
         <div class="nav-brand">
-            <span>🛡️ Admin Panel</span>
+            <span><svg class="admin-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 19 6v5c0 4.8-2.9 8.2-7 10-4.1-1.8-7-5.2-7-10V6l7-3Z"/><path d="m9 12 2 2 4-4"/></svg> Admin Panel</span>
         </div>
         <div style="display: flex; align-items: center; gap: 10px;">
             <a href="display.html" target="_blank" class="btn btn-outline"
                 style="padding: 6px 12px; font-size: 0.8rem; width: auto;">
-                📺 Public Display
+                <svg class="admin-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8m-4-4v4"/></svg> Public Display
             </a>
-            <button id="theme-toggle" class="theme-toggle">🌙</button>
+            <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme"></button>
         </div>
     </nav>
 
     <div class="container" style="padding-top: 80px; height: auto;">
+        <div id="admin-status" class="status-banner" hidden></div>
 
         <!-- DASHBOARD VIEW -->
         <div id="view-dashboard" class="view-section active">
@@ -339,17 +120,16 @@
 
             <div class="card" style="text-align: center; border-color: var(--primary-color); margin-bottom: 20px;">
                 <div style="color: var(--text-muted); font-size: 0.9rem;">Now Serving</div>
-                <div id="now-serving-token" style="font-size: 3.5rem; font-weight: 800; color: var(--primary-color);">A-14</div>
-                <div style="color: var(--success-color); font-weight: 600;">Counter 1</div>
+                <div id="now-serving-token" style="font-size: 3.5rem; font-weight: 800; color: var(--primary-color);">—</div>
+                <div id="now-serving-status" style="color: var(--success-color); font-weight: 600;">No token is being served</div>
             </div>
 
             <div class="queue-control">
                 <button class="btn btn-primary" style="background-color: var(--success-color);"
                     onclick="callNextToken()">
-                    🔔 Call Next
+                    <svg class="admin-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg> Call Next
                 </button>
-                <button class="btn btn-outline" style="border-color: var(--error-color); color: var(--error-color);"
-                    onclick="updateStatus('A-14', 'no-show')">
+                <button id="no-show-button" class="btn btn-outline" style="border-color: var(--error-color); color: var(--error-color);" disabled>
                     ❌ No Show
                 </button>
             </div>
@@ -360,15 +140,8 @@
             </button>
 
             <h3 style="margin-top: 30px; margin-bottom: 15px;">Queue Preview</h3>
-            <div class="space-y-4">
-                <div class="token-list-item" style="border-radius: 8px;">
-                    <span style="font-weight: 700;">A-15</span>
-                    <span style="color: var(--text-muted);">Waiting (5m)</span>
-                </div>
-                <div class="token-list-item" style="border-radius: 8px;">
-                    <span style="font-weight: 700;">B-09</span>
-                    <span style="color: var(--text-muted);">Waiting (12m)</span>
-                </div>
+            <div id="queue-preview" class="space-y-4" aria-live="polite">
+                <p style="color: var(--text-muted); padding: 12px;">No one is waiting.</p>
             </div>
         </div>
 
@@ -382,7 +155,7 @@
                     <div>
                         <h4 style="margin-bottom: 5px;">Walk-In Customer</h4>
                         <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0;">Next: <strong
-                                id="next-walkin">W-001</strong></p>
+                                id="next-walkin">—</strong></p>
                     </div>
                     <button onclick="generateWalkIn()" class="btn btn-primary"
                         style="width: auto; padding: 10px 20px; background-color: #F59E0B;">
@@ -406,97 +179,6 @@
                 </div>
             </div>
 
-            <!-- Demo Controls (Hidden from User, for testing) -->
-            <div style="opacity: 0.5; margin-top: 30px; text-align: center; font-size: 0.7rem;">
-                <button onclick="simulateOnlineBooking()"
-                    style="background: none; border: 1px dashed #ccc; padding: 5px;">Simulate Online Booking
-                    (A-xx)</button>
-            </div>
-        </div>
-
-        <!-- ANALYTICS VIEW -->
-        <div id="view-analytics" class="view-section">
-            <h2 style="margin-bottom: 15px;">Daily Analytics</h2>
-            <div class="analytics-grid">
-                <div class="admin-stat-card analytics-stat">
-                    <strong class="analytics-stat-value">142</strong>
-                    <div style="font-size: 0.8rem; color: var(--text-muted);">Total Tokens</div>
-                    <span class="analytics-stat-change">+12.4% this week</span>
-                </div>
-                <div class="admin-stat-card analytics-stat">
-                    <strong class="analytics-stat-value">8m</strong>
-                    <div style="font-size: 0.8rem; color: var(--text-muted);">Avg Wait</div>
-                    <span class="analytics-stat-change">-2m from yesterday</span>
-                </div>
-                <div class="admin-stat-card analytics-stat">
-                    <strong class="analytics-stat-value">91%</strong>
-                    <div style="font-size: 0.8rem; color: var(--text-muted);">Served</div>
-                    <span class="analytics-stat-change">+4.8% completion</span>
-                </div>
-                <div class="admin-stat-card analytics-stat">
-                    <strong class="analytics-stat-value">23m</strong>
-                    <div style="font-size: 0.8rem; color: var(--text-muted);">Peak Wait</div>
-                    <span class="analytics-stat-change neutral">11:00 AM</span>
-                </div>
-            </div>
-
-            <div class="chart-grid">
-                <div class="card chart-card">
-                    <div class="chart-heading">
-                        <div>
-                            <h3>Token volume</h3>
-                            <div class="chart-subtitle">Completed tokens by day</div>
-                        </div>
-                        <div class="chart-legend"><span><i class="legend-dot"></i>Tokens</span></div>
-                    </div>
-                    <div class="bar-chart" aria-label="Token volume: Mon 86, Tue 104, Wed 92, Thu 118, Fri 142, Sat 109, Sun 76">
-                        <div class="bar-column"><span class="bar" style="height: 61%;"></span><span class="bar-label">Mon</span></div>
-                        <div class="bar-column"><span class="bar" style="height: 74%;"></span><span class="bar-label">Tue</span></div>
-                        <div class="bar-column"><span class="bar" style="height: 65%;"></span><span class="bar-label">Wed</span></div>
-                        <div class="bar-column"><span class="bar" style="height: 83%;"></span><span class="bar-label">Thu</span></div>
-                        <div class="bar-column"><span class="bar" style="height: 100%;"></span><span class="bar-label">Fri</span></div>
-                        <div class="bar-column"><span class="bar" style="height: 77%;"></span><span class="bar-label">Sat</span></div>
-                        <div class="bar-column"><span class="bar" style="height: 54%;"></span><span class="bar-label">Sun</span></div>
-                    </div>
-                </div>
-
-                <div class="card chart-card">
-                    <div class="chart-heading">
-                        <div>
-                            <h3>Service mix</h3>
-                            <div class="chart-subtitle">142 tokens today</div>
-                        </div>
-                    </div>
-                    <div class="donut-layout">
-                        <div class="donut" aria-label="Service mix: Banking 58 percent, General 25 percent, Support 17 percent">
-                            <div class="donut-label">142<small>tokens</small></div>
-                        </div>
-                        <div class="chart-key">
-                            <div class="key-row"><span class="key-name"><i class="key-color"></i>Banking</span><strong>58%</strong></div>
-                            <div class="key-row"><span class="key-name"><i class="key-color amber"></i>General</span><strong>25%</strong></div>
-                            <div class="key-row"><span class="key-name"><i class="key-color green"></i>Support</span><strong>17%</strong></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card chart-card">
-                    <div class="chart-heading">
-                        <div>
-                            <h3>Average wait time</h3>
-                            <div class="chart-subtitle">Minutes by hour</div>
-                        </div>
-                        <div class="chart-legend"><span><i class="legend-dot amber"></i>Minutes</span></div>
-                    </div>
-                    <svg class="line-chart" viewBox="0 0 520 145" role="img" aria-label="Average wait time peaks at 11 AM with 23 minutes and falls to 8 minutes by 4 PM">
-                        <line class="line-grid" x1="28" y1="20" x2="510" y2="20"></line>
-                        <line class="line-grid" x1="28" y1="60" x2="510" y2="60"></line>
-                        <line class="line-grid" x1="28" y1="100" x2="510" y2="100"></line>
-                        <polyline class="line-path" points="32,91 111,76 190,47 269,28 348,53 427,72 506,84"></polyline>
-                        <circle class="line-point" cx="32" cy="91" r="4"></circle><circle class="line-point" cx="111" cy="76" r="4"></circle><circle class="line-point" cx="190" cy="47" r="4"></circle><circle class="line-point" cx="269" cy="28" r="4"></circle><circle class="line-point" cx="348" cy="53" r="4"></circle><circle class="line-point" cx="427" cy="72" r="4"></circle><circle class="line-point" cx="506" cy="84" r="4"></circle>
-                        <text class="line-label" x="26" y="130">9 AM</text><text class="line-label" x="101" y="130">10 AM</text><text class="line-label" x="180" y="130">11 AM</text><text class="line-label" x="258" y="130">12 PM</text><text class="line-label" x="337" y="130">1 PM</text><text class="line-label" x="416" y="130">2 PM</text><text class="line-label" x="493" y="130">3 PM</text>
-                    </svg>
-                </div>
-            </div>
         </div>
 
         <!-- SETTINGS VIEW -->
@@ -509,22 +191,21 @@
                         style="font-size: 0.9rem; margin-bottom: 12px;">Enable Browser Notifications</button>
                     <div
                         style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                        <span>Enable Email System</span>
-                        <input type="checkbox" checked>
+                        <span>Email notifications</span>
+                        <span style="color: var(--text-muted);">Not configured</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span>Enable WhatsApp System</span>
-                        <input type="checkbox" checked>
+                        <span>WhatsApp notifications</span>
+                        <span style="color: var(--text-muted);">Not configured</span>
                     </div>
                 </div>
 
                 <div>
                     <h4 style="margin-bottom: 10px;">Services</h4>
-                    <button class="btn btn-outline" style="font-size: 0.9rem;">Manage Services & QRs</button>
+                    <span style="color: var(--text-muted);">Service management is not available yet.</span>
                 </div>
 
-                <button class="btn btn-ghost" style="color: var(--error-color);"
-                    onclick="window.location.href='index.html'">
+                <button id="logout-button" type="button" class="btn btn-ghost" style="color: var(--error-color);">
                     Log Out
                 </button>
             </div>
@@ -535,265 +216,20 @@
     <!-- Bottom Nav -->
     <div class="bottom-nav">
         <button type="button" class="nav-item active" data-view="dashboard" aria-current="page">
-            <span class="nav-icon">📊</span>
+            <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5m0 14h17"/><path d="m7 15 4-4 3 2 6-7"/></svg>
             <span>Queue</span>
         </button>
         <button type="button" class="nav-item" data-view="tokens">
-            <span class="nav-icon">📝</span>
+            <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h8l4 4v14H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/><path d="M14 3v5h5M9 13h6m-6 4h6"/></svg>
             <span>Tokens</span>
         </button>
-        <button type="button" class="nav-item" data-view="analytics">
-            <span class="nav-icon">📈</span>
-            <span>Stats</span>
-        </button>
         <button type="button" class="nav-item" data-view="settings">
-            <span class="nav-icon">⚙️</span>
+            <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z"/><path d="m19.4 15 .1.1 1.2.9-1.2 2.1-1.4-.5a8 8 0 0 1-1.7 1l-.2 1.5h-2.4l-.3-1.5a8 8 0 0 1-1.8-.7l-1.3.7-1.4-2 1-1.1a7 7 0 0 1-.2-2l-1.2-.9 1.2-2.1 1.4.5a8 8 0 0 1 1.7-1l.2-1.5h2.4l.3 1.5a8 8 0 0 1 1.8.7l1.3-.7 1.4 2-1 1.1c.2.7.2 1.3.1 2Z"/></svg>
             <span>Settings</span>
         </button>
     </div>
 
     <script src="assets/js/main.js"></script>
-    <script type="text/plain">
-        // State
-        let tokens = [
-            { id: 'A-14', type: 'online', service: 'Bank Service', status: 'serving', time: '10:00 AM' },
-            { id: 'A-15', type: 'online', service: 'Bank Service', status: 'waiting', time: '10:05 AM' },
-            { id: 'W-005', type: 'walkin', service: 'General', status: 'waiting', time: '10:12 AM' },
-            { id: 'A-16', type: 'online', service: 'Bank Service', status: 'waiting', time: '10:15 AM' }
-        ];
-
-        let nextWalkIn = 6;
-        let nextOnline = 17;
-        let backendAvailable = false;
-
-        // Init
-        document.addEventListener('DOMContentLoaded', async () => {
-            await loadQueue();
-            updateNextWalkInLabel();
-            initLiveNotifications();
-            document.getElementById('enable-browser-notifications')?.addEventListener('click', enableBrowserNotifications);
-        });
-
-        async function loadQueue() {
-            try {
-                const response = await fetch('/api/queue');
-                if (!response.ok) throw new Error('Queue API unavailable');
-                const data = await response.json();
-                tokens = data.tokens;
-                backendAvailable = true;
-            } catch (error) {
-                // Keep the demo usable when this page is opened directly as a file.
-                backendAvailable = false;
-            }
-            renderTokens();
-        }
-
-        function initLiveNotifications() {
-            if (!backendAvailable || typeof EventSource === 'undefined') return;
-            const events = new EventSource('/api/events');
-            events.addEventListener('queue-updated', event => {
-                tokens = JSON.parse(event.data).tokens;
-                renderTokens();
-                updateDashboardNowServing();
-            });
-            events.addEventListener('notification', event => {
-                const notification = JSON.parse(event.data);
-                if (notification.channel === 'browser') showBrowserNotification(notification.message);
-            });
-        }
-
-        async function enableBrowserNotifications() {
-            if (!('Notification' in window)) {
-                alert('Browser notifications are not supported here.');
-                return;
-            }
-            const permission = await Notification.requestPermission();
-            alert(permission === 'granted' ? 'Browser notifications enabled.' : 'Browser notifications were not enabled.');
-        }
-
-        function showBrowserNotification(message) {
-            if ('Notification' in window && Notification.permission === 'granted') {
-                new Notification('DigiToken Queue Update', { body: message });
-            }
-        }
-
-        function switchAdminTab(viewId, navEl) {
-            // Update Nav
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            navEl.classList.add('active');
-
-            // Update View
-            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-            document.getElementById('view-' + viewId).classList.add('active');
-        }
-
-        /* Token Management Logic */
-
-        function renderTokens() {
-            const listEl = document.getElementById('token-list');
-            const countEl = document.getElementById('queue-count');
-
-            if (!listEl) return;
-
-            // Filter out completed for the main list (simulated)
-            const activeTokens = tokens.filter(t => t.status !== 'completed');
-            countEl.innerText = activeTokens.filter(t => t.status === 'waiting').length;
-
-            listEl.innerHTML = activeTokens.map(t => {
-                const isOnline = t.type === 'online';
-                const badgeClass = isOnline ? 'badge-online' : 'badge-walkin';
-                const typeLabel = isOnline ? 'Pre-Booked' : 'Walk-In';
-
-                let actionBtn = '';
-                if (t.status === 'waiting') {
-                    actionBtn = `<button onclick="updateStatus('${t.id}', 'serving')" class="btn btn-outline" style="padding: 5px 10px; font-size: 0.75rem; width: auto;">Serve</button>`;
-                } else if (t.status === 'serving') {
-                    actionBtn = `<button onclick="updateStatus('${t.id}', 'completed')" class="btn btn-primary" style="padding: 5px 10px; font-size: 0.75rem; width: auto; background-color: var(--success-color);">Done</button>`;
-                }
-
-                return `
-                <div class="token-list-item" style="align-items: center;">
-                    <div style="flex: 1;">
-                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
-                            <span style="font-weight: 700; font-size: 1.1rem;">${t.id}</span>
-                            <span class="badge ${badgeClass}">${typeLabel}</span>
-                        </div>
-                        <div style="font-size: 0.8rem; color: var(--text-muted);">
-                            ${t.service} • ${t.time}
-                        </div>
-                    </div>
-                    <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 5px;">
-                        <span class="badge ${t.status === 'serving' ? 'badge-status-serving' : 'badge-status-waiting'}">
-                            ${t.status.charAt(0).toUpperCase() + t.status.slice(1)}
-                        </span>
-                        ${actionBtn}
-                    </div>
-                </div>
-                `;
-            }).join('');
-        }
-
-        async function generateWalkIn() {
-            if (backendAvailable) {
-                const response = await fetch('/api/tokens', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ type: 'walkin', service: 'General Enquiry', channel: 'browser' })
-                });
-                if (response.ok) {
-                    const token = await response.json();
-                    tokens.push(token);
-                    nextWalkIn++;
-                    updateNextWalkInLabel();
-                    renderTokens();
-                    alert(`Token ${token.id} generated!`);
-                    return;
-                }
-            }
-
-            const id = `W-${String(nextWalkIn).padStart(3, '0')}`;
-            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-            const newToken = {
-                id: id,
-                type: 'walkin',
-                status: 'waiting',
-                service: 'General Enquiry',
-                time: time
-            };
-
-            tokens.push(newToken);
-            nextWalkIn++;
-
-            updateNextWalkInLabel();
-            renderTokens();
-
-            // Optional: Show quick feedback
-            alert(`Token ${id} Generated!`);
-        }
-
-        async function simulateOnlineBooking() {
-            if (backendAvailable) {
-                const response = await fetch('/api/tokens', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ type: 'online', service: 'Bank Service', channel: 'browser' })
-                });
-                if (response.ok) {
-                    tokens.push(await response.json());
-                    nextOnline++;
-                    renderTokens();
-                    return;
-                }
-            }
-
-            const id = `A-${nextOnline}`;
-            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-            tokens.push({
-                id: id,
-                type: 'online',
-                status: 'waiting',
-                service: 'Bank Service',
-                time: time
-            });
-            nextOnline++;
-            renderTokens();
-        }
-
-        async function updateStatus(id, newStatus) {
-            const index = tokens.findIndex(t => t.id === id);
-            if (index !== -1) {
-                if (backendAvailable) {
-                    const response = await fetch(`/api/tokens/${encodeURIComponent(id)}/status`, {
-                        method: 'PATCH',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ status: newStatus, channel: 'browser' })
-                    });
-                    if (!response.ok) return alert('Unable to update this token.');
-                    await loadQueue();
-                    updateDashboardNowServing();
-                    return;
-                }
-
-// If serving, ensure no others are serving (simple logic)
-                if (newStatus === 'serving') {
-                    tokens.forEach(t => {
-                        if (t.status === 'serving') t.status = 'completed'; // Auto complete previous
-                    });
-                }
-                tokens[index].status = newStatus;
-                renderTokens();
-                updateDashboardNowServing();
-            }
-        }
-
-        function callNextToken() {
-            // Find first waiting token
-            const nextToken = tokens.find(t => t.status === 'waiting');
-            if (nextToken) {
-                updateStatus(nextToken.id, 'serving');
-                // Optional: visual feedback or sound
-            } else {
-                alert('No tokens waiting in queue.');
-            }
-        }
-
-        function updateDashboardNowServing() {
-            const serving = tokens.find(t => t.status === 'serving');
-            if (serving) {
-                // Update Dashboard View Elements
-                const nowServingNumber = document.querySelector('#view-dashboard .card div:nth-child(2)');
-                if (nowServingNumber) nowServingNumber.innerText = serving.id;
-            }
-        }
-
-        function updateNextWalkInLabel() {
-            const el = document.getElementById('next-walkin');
-            if (el) el.innerText = `W-${String(nextWalkIn).padStart(3, '0')}`;
-        }
-
-    </script>
     <script type="module" src="assets/js/admin/app.js"></script>
 </body>
 

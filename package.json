@@ -5,6 +5,12 @@
   "description": "DigiToken queue maintenance app",
   "scripts": {
     "start": "node server.js",
-    "check": "node --check server.js"
+    "check": "node --check server.js && node --check db.js && node --check auth.js && node --check queue.js && node --check events.js && node --check assets/js/profile-ui.js",
+    "test": "node --test queue.test.js auth.test.js events.test.js flow.test.js profile-ui.test.js"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "dotenv": "^18.0.6",
+    "pg": "^8.23.1"
   }
 }

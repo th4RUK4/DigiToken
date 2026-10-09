@@ -26,87 +26,96 @@
     </nav>
 
     <div class="container" style="padding-top: 80px;">
+        <div id="profile-status" class="status-banner" hidden></div>
 
         <div class="card" style="text-align: center; margin-bottom: 20px;">
-            <div class="profile-initials"
+            <div id="profile-initials" class="profile-initials"
                 style="width: 80px; height: 80px; background: var(--primary-color); border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 15px; font-weight: 600;">
-                JP
+                ?
             </div>
-            <h2>Janith Perera</h2>
-            <p style="color: var(--text-muted);">janith@example.com</p>
+            <h2 id="profile-name">—</h2>
+            <p id="profile-email" style="color: var(--text-muted);">—</p>
         </div>
 
         <div class="card">
             <h3 style="margin-bottom: 20px;">Edit Details</h3>
-            <form onsubmit="handleSave(event)" class="space-y-4">
+            <form id="profile-form" class="space-y-4">
                 <div>
-                    <label style="display: block; margin-bottom: 5px; font-weight: 500; color: var(--text-muted);">First
-                        Name</label>
-                    <input type="text" class="input-field" value="Janith" required>
+                    <label style="display: block; margin-bottom: 5px; font-weight: 500; color: var(--text-muted);">First Name</label>
+                    <input id="first-name" type="text" class="input-field">
                 </div>
                 <div>
-                    <label style="display: block; margin-bottom: 5px; font-weight: 500; color: var(--text-muted);">Last
-                        Name</label>
-                    <input type="text" class="input-field" value="Perera" required>
+                    <label style="display: block; margin-bottom: 5px; font-weight: 500; color: var(--text-muted);">Last Name</label>
+                    <input id="last-name" type="text" class="input-field">
                 </div>
                 <div>
-                    <label style="display: block; margin-bottom: 5px; font-weight: 500; color: var(--text-muted);">Phone
-                        Number</label>
-                    <input type="tel" class="input-field" value="+94 77 123 4567" required>
+                    <label style="display: block; margin-bottom: 5px; font-weight: 500; color: var(--text-muted);">Phone Number</label>
+                    <input id="phone" type="tel" class="input-field">
                 </div>
-
-                <button type="submit" class="btn btn-primary" style="margin-top: 20px;">Save Changes</button>
+                <button type="submit" class="btn btn-primary" id="save-profile" style="margin-top: 20px;">Save Changes</button>
             </form>
         </div>
 
         <div class="space-y-4" style="margin-top: 20px;">
-            <button onclick="handleLogout()" class="btn btn-outline"
+            <button id="logout-btn" class="btn btn-outline"
                 style="border-color: var(--error-color); color: var(--error-color);">
                 Log Out
             </button>
         </div>
-
     </div>
 
     <script src="assets/js/main.js"></script>
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/profile-ui.js"></script>
     <script>
-        function handleSave(e) {
-            e.preventDefault();
-            const btn = e.target.querySelector('button[type="submit"]');
-            const originalText = btn.innerText;
+        const { apiRequest: apiFetch, requireAuth, showStatus: showMessage, initialsFor } = window.DigiTokenApi;
+        const profileStatus = document.getElementById('profile-status');
 
-            // Get values
-            const firstName = e.target.querySelector('input[type="text"]:nth-of-type(1)').value;
-            const lastName = e.target.querySelector('input[type="text"]:nth-of-type(2)').value;
-
-            // Save to LocalStorage
-            localStorage.setItem('userProfile', JSON.stringify({ firstName, lastName }));
-
-            // Update UI immediately (optional, but good feedback)
-            document.querySelector('.card h2').innerText = `${firstName} ${lastName}`;
-            document.querySelector('.card .profile-initials').innerText = `${firstName[0]}${lastName[0]}`;
-
-            // Simulate saving
-            btn.innerText = "Saving...";
-            btn.disabled = true;
-
-            setTimeout(() => {
-                btn.innerText = "Saved!";
-                btn.style.backgroundColor = "var(--success-color)";
-
-                setTimeout(() => {
-                    btn.innerText = originalText;
-                    btn.style.backgroundColor = "";
-                    btn.disabled = false;
-                }, 2000);
-            }, 800);
+        function paintUser(user) {
+            window.DigiTokenProfileUi.paintProfile(user, {
+                name: document.getElementById('profile-name'),
+                email: document.getElementById('profile-email'),
+                initials: document.getElementById('profile-initials'),
+                firstName: document.getElementById('first-name'),
+                lastName: document.getElementById('last-name'),
+                phone: document.getElementById('phone')
+            }, initialsFor);
         }
 
-        function handleLogout() {
-            if (confirm('Are you sure you want to logout?')) {
-                window.location.href = 'auth.html';
+        document.getElementById('profile-form').addEventListener('submit', async event => {
+            event.preventDefault();
+            const button = document.getElementById('save-profile');
+            button.disabled = true;
+            showMessage(document.getElementById('profile-status'), 'Saving…', 'info');
+            try {
+                const data = await apiFetch('/api/auth/profile', {
+                    method: 'PATCH',
+                    body: {
+                        firstName: document.getElementById('first-name').value,
+                        lastName: document.getElementById('last-name').value,
+                        phone: document.getElementById('phone').value
+                    }
+                });
+                paintUser(data.user);
+                showMessage(document.getElementById('profile-status'), 'Profile saved.', 'success');
+            } catch (error) {
+                showMessage(document.getElementById('profile-status'), error.message, 'error');
+            } finally {
+                button.disabled = false;
             }
-        }
+        });
+
+        window.DigiTokenProfileUi.bindLogoutButton(document.getElementById('logout-btn'), {
+            apiRequest: apiFetch,
+            showStatus: (message, type) => showMessage(profileStatus, message, type),
+            navigate: destination => { window.location.href = destination; }
+        });
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = await requireAuth();
+            if (!user) return;
+            paintUser(user);
+        });
     </script>
 </body>
 

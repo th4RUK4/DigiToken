@@ -26,6 +26,9 @@
             flex: 1;
             padding: 10px;
             text-align: center;
+            border: 0;
+            background: transparent;
+            font: inherit;
             cursor: pointer;
             border-radius: 8px;
             font-weight: 600;
@@ -47,6 +50,55 @@
             display: block;
             animation: fadeIn 0.3s ease;
         }
+
+        .auth-field-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .auth-field-row > .auth-field {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .auth-field label {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .auth-switch {
+            margin-top: 18px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .auth-switch-link {
+            border: 0;
+            padding: 4px;
+            background: transparent;
+            color: var(--primary-color);
+            font: inherit;
+            font-weight: 700;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+            cursor: pointer;
+        }
+
+        .auth-switch-link:focus-visible,
+        .tab:focus-visible {
+            outline: 3px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        @media (max-width: 420px) {
+            .auth-field-row {
+                flex-direction: column;
+            }
+        }
     </style>
 </head>
 
@@ -60,189 +112,155 @@
     </nav>
 
     <div class="auth-container">
-
-        <!-- Main Form Card -->
         <div class="card">
-
-            <!-- Global Auth Tabs (Login vs Sign Up) -->
-            <div id="main-tabs" class="tab-group">
-                <div class="tab active" onclick="switchMainTab('login')">Login</div>
-                <div class="tab" onclick="switchMainTab('signup')">Sign Up</div>
+            <div id="main-tabs" class="tab-group" role="tablist" aria-label="Account access">
+                <button id="tab-login" class="tab active" type="button" data-tab="login" role="tab" aria-controls="view-login" aria-selected="true" tabindex="0" onclick="(function(){document.querySelectorAll('#main-tabs .tab').forEach(tab => {const isActive=tab.dataset.tab==='login'; tab.classList.toggle('active', isActive); tab.setAttribute('aria-selected', String(isActive)); tab.tabIndex = isActive ? 0 : -1;}); document.querySelectorAll('.section').forEach(section => {const isActive = section.id === 'view-login'; section.classList.toggle('active', isActive); section.hidden = !isActive;}); const statusEl = document.getElementById('auth-status'); if (statusEl && window.DigiTokenApi && typeof window.DigiTokenApi.showStatus === 'function') window.DigiTokenApi.showStatus(statusEl, '');})()">Login</button>
+                <button id="tab-signup" class="tab" type="button" data-tab="signup" role="tab" aria-controls="view-signup" aria-selected="false" tabindex="-1" onclick="(function(){document.querySelectorAll('#main-tabs .tab').forEach(tab => {const isActive=tab.dataset.tab==='signup'; tab.classList.toggle('active', isActive); tab.setAttribute('aria-selected', String(isActive)); tab.tabIndex = isActive ? 0 : -1;}); document.querySelectorAll('.section').forEach(section => {const isActive = section.id === 'view-signup'; section.classList.toggle('active', isActive); section.hidden = !isActive;}); const statusEl = document.getElementById('auth-status'); if (statusEl && window.DigiTokenApi && typeof window.DigiTokenApi.showStatus === 'function') window.DigiTokenApi.showStatus(statusEl, '');})()">Sign Up</button>
             </div>
 
-            <!-- LOGIN SECTION -->
-            <div id="view-login" class="section active">
+            <div id="auth-status" class="status-banner" hidden></div>
+
+            <div id="view-login" class="section active" role="tabpanel" aria-labelledby="tab-login">
                 <h2 style="text-align: center; margin-bottom: 1rem;">Welcome Back</h2>
 
-                <!-- Role Toggle -->
-                <div class="flex-center" style="margin-bottom: 1.5rem; gap: 10px;">
-                    <label class="flex-center" style="cursor: pointer; gap: 5px;">
-                        <input type="radio" name="role" value="user" checked onchange="toggleRole()"> User
-                    </label>
-                    <label class="flex-center" style="cursor: pointer; gap: 5px;">
-                        <input type="radio" name="role" value="admin" onchange="toggleRole()"> Admin
-                    </label>
-                </div>
-
-                <form onsubmit="handleLogin(event)" class="space-y-4">
-                    <div id="login-google" class="space-y-4">
-                        <button type="button" class="btn btn-outline" onclick="handleLogin(event)"
-                            style="border-color: #ddd; color: var(--text-main);">
-                            🔵 Continue with Google
-                        </button>
-                        <div style="text-align: center; color: var(--text-muted); font-size: 0.8rem;">OR</div>
+                <form id="login-form" class="space-y-4">
+                    <div class="auth-field">
+                        <label for="login-email">Email address</label>
+                        <input id="login-email" type="email" class="input-field" placeholder="you@example.com" required autocomplete="username">
+                    </div>
+                    <div class="auth-field">
+                        <label for="login-password">Password</label>
+                        <input id="login-password" type="password" class="input-field" placeholder="Enter your password" required autocomplete="current-password">
                     </div>
 
-                    <input type="email" class="input-field" placeholder="Email Address" required>
-                    <input type="password" class="input-field" placeholder="Password" required>
+                    <p style="font-size: 0.8rem; color: var(--text-muted);">
+                        Password reset via OTP is coming soon. Contact an admin if you need access restored.
+                    </p>
 
-                    <div style="text-align: right;">
-                        <span onclick="showView('view-forgot')"
-                            style="font-size: 0.8rem; color: var(--primary-color); cursor: pointer;">Forgot
-                            Password?</span>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary">Login</button>
+                    <button type="submit" class="btn btn-primary" id="login-submit">Login</button>
                 </form>
+                <p class="auth-switch">New to DigiToken? <button class="auth-switch-link" type="button" data-auth-target="signup" onclick="(function(){document.querySelectorAll('#main-tabs .tab').forEach(tab => {const isActive=tab.dataset.tab==='signup'; tab.classList.toggle('active', isActive); tab.setAttribute('aria-selected', String(isActive)); tab.tabIndex = isActive ? 0 : -1;}); document.querySelectorAll('.section').forEach(section => {const isActive = section.id === 'view-signup'; section.classList.toggle('active', isActive); section.hidden = !isActive;}); const statusEl = document.getElementById('auth-status'); if (statusEl && window.DigiTokenApi && typeof window.DigiTokenApi.showStatus === 'function') window.DigiTokenApi.showStatus(statusEl, '');})()">Create an account</button></p>
             </div>
 
-            <!-- SIGN UP SECTION -->
-            <div id="view-signup" class="section">
+            <div id="view-signup" class="section" role="tabpanel" aria-labelledby="tab-signup" hidden>
                 <h2 style="text-align: center; margin-bottom: 1rem;">Create Account</h2>
-                <form onsubmit="handleSignup(event)" class="space-y-4">
-                    <button type="button" class="btn btn-outline" style="border-color: #ddd; color: var(--text-main);">
-                        🔵 Sign up with Google
-                    </button>
-                    <div style="text-align: center; color: var(--text-muted); font-size: 0.8rem;">OR</div>
-
-                    <div style="display: flex; gap: 10px;">
-                        <input type="text" class="input-field" placeholder="First Name" required>
-                        <input type="text" class="input-field" placeholder="Last Name" required>
+                <p style="text-align: center; color: var(--text-muted); margin: -6px 0 20px;">Create a free customer account to book service tokens and track your place in the queue.</p>
+                <form id="signup-form" class="space-y-4">
+                    <div class="auth-field-row">
+                        <div class="auth-field">
+                            <label for="signup-first">First name</label>
+                            <input id="signup-first" type="text" class="input-field" placeholder="First name" autocomplete="given-name">
+                        </div>
+                        <div class="auth-field">
+                            <label for="signup-last">Last name</label>
+                            <input id="signup-last" type="text" class="input-field" placeholder="Last name" autocomplete="family-name">
+                        </div>
                     </div>
-                    <input type="email" class="input-field" placeholder="Email Address" required>
-                    <input type="password" class="input-field" placeholder="Password" required>
+                    <div class="auth-field">
+                        <label for="signup-email">Email address</label>
+                        <input id="signup-email" type="email" class="input-field" placeholder="you@example.com" required autocomplete="email">
+                    </div>
+                    <div class="auth-field">
+                        <label for="signup-password">Password</label>
+                        <input id="signup-password" type="password" class="input-field" placeholder="At least 6 characters" required minlength="6" autocomplete="new-password" aria-describedby="signup-password-hint">
+                        <small id="signup-password-hint" style="display: block; margin-top: 6px; color: var(--text-muted);">Use at least 6 characters.</small>
+                    </div>
 
-                    <button type="submit" class="btn btn-primary">Sign Up</button>
+                    <button type="submit" class="btn btn-primary" id="signup-submit">Sign Up</button>
                 </form>
+                <p class="auth-switch">Already have an account? <button class="auth-switch-link" type="button" data-auth-target="login" onclick="(function(){document.querySelectorAll('#main-tabs .tab').forEach(tab => {const isActive=tab.dataset.tab==='login'; tab.classList.toggle('active', isActive); tab.setAttribute('aria-selected', String(isActive)); tab.tabIndex = isActive ? 0 : -1;}); document.querySelectorAll('.section').forEach(section => {const isActive = section.id === 'view-login'; section.classList.toggle('active', isActive); section.hidden = !isActive;}); const statusEl = document.getElementById('auth-status'); if (statusEl && window.DigiTokenApi && typeof window.DigiTokenApi.showStatus === 'function') window.DigiTokenApi.showStatus(statusEl, '');})()">Log in</button></p>
             </div>
-
-            <!-- FORGOT PASSWORD -->
-            <div id="view-forgot" class="section">
-                <h3>Reset Password</h3>
-                <p style="font-size: 0.9rem; color: var(--text-muted);">Enter your email to receive an OTP.</p>
-                <form onsubmit="handleForgot(event)" class="space-y-4">
-                    <input type="email" class="input-field" placeholder="Email Address" required>
-                    <button type="submit" class="btn btn-primary">Send OTP</button>
-                    <button type="button" class="btn btn-ghost" onclick="showView('view-login')">Back</button>
-                </form>
-            </div>
-
-            <!-- OTP SECTION -->
-            <div id="view-otp" class="section">
-                <h3>Verify OTP</h3>
-                <p style="font-size: 0.9rem; color: var(--text-muted);">Enter the 4-digit code sent to your email.</p>
-                <div class="flex-center" style="gap: 10px; margin: 20px 0;">
-                    <input type="text" class="input-field otp-cell" inputmode="numeric" autocomplete="one-time-code"
-                        aria-label="OTP digit 1" maxlength="1">
-                    <input type="text" class="input-field otp-cell" inputmode="numeric" aria-label="OTP digit 2"
-                        maxlength="1">
-                    <input type="text" class="input-field otp-cell" inputmode="numeric" aria-label="OTP digit 3"
-                        maxlength="1">
-                    <input type="text" class="input-field otp-cell" inputmode="numeric" aria-label="OTP digit 4"
-                        maxlength="1">
-                </div>
-                <button onclick="handleVerify(event)" class="btn btn-primary">Verify & Proceed</button>
-                <div style="text-align: center; margin-top: 10px;">
-                    <span style="font-size: 0.8rem; color: var(--primary-color); cursor: pointer;">Resend Code</span>
-                </div>
-            </div>
-
         </div>
     </div>
 
     <script src="assets/js/main.js"></script>
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/auth-ui.js"></script>
     <script>
-        // Local Page Logic
-        function switchMainTab(type) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            event.target.classList.add('active');
+        const { apiRequest: apiFetch, showStatus: showMessage } = window.DigiTokenApi;
+        const statusEl = document.getElementById('auth-status');
 
-            showView(type === 'login' ? 'view-login' : 'view-signup');
+        function switchAuthTab(tabName) {
+            const activeTab = tabName === 'signup' ? 'signup' : 'login';
+            document.querySelectorAll('#main-tabs .tab').forEach(tab => {
+                const isActive = tab.dataset.tab === activeTab;
+                tab.classList.toggle('active', isActive);
+                tab.setAttribute('aria-selected', String(isActive));
+                tab.tabIndex = isActive ? 0 : -1;
+            });
+
+            document.querySelectorAll('.section').forEach(section => {
+                const isActive = section.id === `view-${activeTab}`;
+                section.classList.toggle('active', isActive);
+                section.hidden = !isActive;
+            });
+
+            showMessage(statusEl, '');
         }
 
-        function showView(id) {
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
+        window.switchAuthTab = switchAuthTab;
 
-            // Hide tabs if drilling down (otp/forgot)
-            const showTabs = (id === 'view-login' || id === 'view-signup');
-            document.getElementById('main-tabs').style.display = showTabs ? 'flex' : 'none';
-        }
+        const initialTab = new URLSearchParams(window.location.search).get('tab') === 'signup' ? 'signup' : 'login';
+        switchAuthTab(initialTab);
 
-        function toggleRole() {
-            const role = document.querySelector('input[name="role"]:checked').value;
-            const googleBtn = document.getElementById('login-google');
-            // Admins don't use Google Login in this spec
-            googleBtn.style.display = role === 'admin' ? 'none' : 'block';
-        }
-
-        function handleLogin(e) {
-            e.preventDefault();
-            const role = document.querySelector('input[name="role"]:checked').value;
-            if (role === 'admin') {
-                window.location.href = 'admin.html';
-            } else {
-                window.location.href = 'dashboard.html';
+        async function redirectIfLoggedIn() {
+            try {
+                const { user } = await apiFetch('/api/auth/me');
+                window.location.href = user.role === 'admin' ? 'admin.html' : 'dashboard.html';
+            } catch {
+                // stay on auth page
             }
         }
 
-        function handleSignup(e) {
-            e.preventDefault();
-            // Simulate OTP flow
-            showView('view-otp');
-        }
-
-        function handleForgot(e) {
-            e.preventDefault();
-            showView('view-otp');
-        }
-
-        function handleVerify(e) {
-            // Verify and go to dashboard
-            window.location.href = 'dashboard.html';
-        }
-
-        const otpCells = [...document.querySelectorAll('.otp-cell')];
-
-        otpCells.forEach((cell, index) => {
-            cell.addEventListener('input', event => {
-                const digits = event.target.value.replace(/\D/g, '');
-                event.target.value = digits.slice(-1);
-                if (digits.length > 1) fillOtpFrom(index, digits);
-                else if (event.target.value && otpCells[index + 1]) otpCells[index + 1].focus();
-            });
-
-            cell.addEventListener('keydown', event => {
-                if (event.key === 'Backspace' && !cell.value && otpCells[index - 1]) {
-                    otpCells[index - 1].focus();
-                }
-                if (event.key === 'ArrowLeft' && otpCells[index - 1]) otpCells[index - 1].focus();
-                if (event.key === 'ArrowRight' && otpCells[index + 1]) otpCells[index + 1].focus();
-            });
-
-            cell.addEventListener('paste', event => {
-                event.preventDefault();
-                fillOtpFrom(index, event.clipboardData.getData('text').replace(/\D/g, ''));
-            });
+        document.getElementById('login-form').addEventListener('submit', async event => {
+            event.preventDefault();
+            const submit = document.getElementById('login-submit');
+            submit.disabled = true;
+            showMessage(statusEl, 'Signing in…', 'info');
+            try {
+                const data = await apiFetch('/api/auth/login', {
+                    method: 'POST',
+                    body: {
+                        email: document.getElementById('login-email').value,
+                        password: document.getElementById('login-password').value
+                    }
+                });
+                window.location.href = data.user.role === 'admin' ? 'admin.html' : 'dashboard.html';
+            } catch (error) {
+                showMessage(statusEl, error.message, 'error');
+                submit.disabled = false;
+            }
         });
 
-        function fillOtpFrom(startIndex, value) {
-            [...value].slice(0, otpCells.length - startIndex).forEach((digit, offset) => {
-                otpCells[startIndex + offset].value = digit;
-            });
-            const nextCell = otpCells[Math.min(startIndex + value.length, otpCells.length - 1)];
-            nextCell.focus();
-        }
+        document.getElementById('signup-form').addEventListener('submit', async event => {
+            event.preventDefault();
+            const submit = document.getElementById('signup-submit');
+            submit.disabled = true;
+            showMessage(statusEl, 'Creating account…', 'info');
+            try {
+                const firstName = document.getElementById('signup-first').value.trim();
+                const lastName = document.getElementById('signup-last').value.trim();
+                const email = document.getElementById('signup-email').value.trim();
+                const password = document.getElementById('signup-password').value;
+
+                await apiFetch('/api/auth/signup', {
+                    method: 'POST',
+                    body: {
+                        firstName,
+                        lastName,
+                        email,
+                        password
+                    }
+                });
+
+                window.location.href = 'dashboard.html';
+            } catch (error) {
+                showMessage(statusEl, error.message, 'error');
+                submit.disabled = false;
+            }
+        });
+
+        redirectIfLoggedIn();
     </script>
 </body>
 
