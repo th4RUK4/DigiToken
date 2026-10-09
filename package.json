@@ -1,0 +1,13 @@
+{
+  "name": "digitoken",
+  "version": "1.0.0",
+  "private": true,
+  "description": "DigiToken authentication service",
+  "scripts": {
+    "check": "node --check auth.js && node --check assets/js/auth-ui.js && node --check assets/js/profile-ui.js",
+    "test": "node --test auth.test.js profile-ui.test.js"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0"
+  }
+}
