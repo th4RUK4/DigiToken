@@ -22,6 +22,11 @@ const MIME_TYPES = {
   '.png': 'image/png'
 };
 
+/**
+ * Reads and parses the JSON data store from disk.
+ * @returns {Promise<Object>} The parsed store containing `tokens` and `notifications` arrays.
+ * @throws {Error} If the file cannot be read/parsed or has an invalid structure.
+ */
 async function readStore() {
   const raw = await fs.readFile(STORE_PATH, 'utf8');
   const store = JSON.parse(raw);
@@ -31,12 +36,23 @@ async function readStore() {
   return store;
 }
 
+/**
+ * Persists the store to disk atomically by writing to a temp file and renaming it over the store path.
+ * @param {Object} store - The store object to serialize and save.
+ * @returns {Promise<void>}
+ */
 async function writeStore(store) {
   const tempPath = `${STORE_PATH}.${process.pid}.tmp`;
   await fs.writeFile(tempPath, `${JSON.stringify(store, null, 2)}\n`, { mode: 0o600 });
   await fs.rename(tempPath, STORE_PATH);
 }
 
+/**
+ * Writes a JSON response with standard security headers.
+ * @param {http.ServerResponse} response - The HTTP response to write to.
+ * @param {number} status - The HTTP status code to send.
+ * @param {*} payload - The value to serialize as JSON in the response body.
+ */
 function sendJson(response, status, payload) {
   response.writeHead(status, {
     'Content-Type': 'application/json; charset=utf-8',
@@ -47,6 +63,12 @@ function sendJson(response, status, payload) {
   response.end(JSON.stringify(payload));
 }
 
+/**
+ * Enforces a sliding-window rate limit per remote address, sending a 429 response when exceeded.
+ * @param {http.IncomingMessage} request - The incoming HTTP request.
+ * @param {http.ServerResponse} response - The HTTP response, used to send a 429 if the limit is exceeded.
+ * @returns {boolean} True if the request is allowed to proceed, false if it was rejected.
+ */
 function rateLimit(request, response) {
   const now = Date.now();
   const key = request.socket.remoteAddress || 'unknown';
@@ -67,10 +89,20 @@ function rateLimit(request, response) {
   return true;
 }
 
+/**
+ * Encodes a value as a base64url string.
+ * @param {string|Buffer} value - The value to encode.
+ * @returns {string} The base64url-encoded string.
+ */
 function base64Url(value) {
   return Buffer.from(value).toString('base64url');
 }
 
+/**
+ * Creates a signed HS256 JWT for the given payload using JWT_SECRET.
+ * @param {Object} payload - The claims to embed in the token.
+ * @returns {string} The encoded `header.body.signature` JWT string.
+ */
 function createJwt(payload) {
   const header = base64Url(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
   const body = base64Url(JSON.stringify(payload));
@@ -81,6 +113,11 @@ function createJwt(payload) {
   return `${header}.${body}.${signature}`;
 }
 
+/**
+ * Verifies a JWT's signature and expiration.
+ * @param {string} token - The JWT string to verify.
+ * @returns {Object|null} The decoded payload if the token is valid and unexpired, otherwise null.
+ */
 function verifyJwt(token) {
   if (!JWT_SECRET || typeof token !== 'string') return null;
   const parts = token.split('.');
@@ -99,6 +136,13 @@ function verifyJwt(token) {
   }
 }
 
+/**
+ * Validates the request's bearer token and ensures it carries the required role, sending a 401 if not.
+ * @param {http.IncomingMessage} request - The incoming HTTP request containing the Authorization header.
+ * @param {http.ServerResponse} response - The HTTP response, used to send a 401 if authentication fails.
+ * @param {string} role - The role required to access the resource.
+ * @returns {Object|null} The decoded JWT payload if authorized, otherwise null.
+ */
 function requireRole(request, response, role) {
   const header = request.headers.authorization || '';
   const token = header.startsWith('Bearer ') ? header.slice(7) : null;
@@ -110,6 +154,11 @@ function requireRole(request, response, role) {
   return payload;
 }
 
+/**
+ * Sends a server-sent event with the given name and JSON payload to all connected SSE clients.
+ * @param {string} event - The SSE event name.
+ * @param {*} payload - The value to serialize as JSON in the event data.
+ */
 function broadcast(event, payload) {
   const message = `event: ${event}\ndata: ${JSON.stringify(payload)}\n\n`;
   clients.forEach(client => client.write(message));
@@ -120,6 +169,12 @@ const TOKEN_TYPES = new Set(['walkin', 'online']);
 const NOTIFICATION_CHANNELS = new Set(['browser', 'email', 'sms']);
 const TOKEN_STATUSES = new Set(['waiting', 'serving', 'completed', 'no-show']);
 
+/**
+ * Reads and parses a JSON request body, enforcing a maximum size.
+ * @param {http.IncomingMessage} request - The incoming HTTP request to read the body from.
+ * @returns {Promise<Object|null>} The parsed JSON object, an empty object if there was no body,
+ *   or null if the body was too large, not valid JSON, or not a plain object.
+ */
 async function readBody(request) {
   let body = '';
   for await (const chunk of request) {
@@ -135,6 +190,11 @@ async function readBody(request) {
   }
 }
 
+/**
+ * Validates the request body for creating a new token.
+ * @param {Object} body - The parsed request body.
+ * @returns {string|null} An error message if validation fails, otherwise null.
+ */
 function validateTokenInput(body) {
   if (!body || typeof body !== 'object') return 'request body must be a JSON object';
   if (!TOKEN_TYPES.has(body.type)) return 'type must be walkin or online';
@@ -146,6 +206,11 @@ function validateTokenInput(body) {
   return null;
 }
 
+/**
+ * Validates the request body for updating a token's status.
+ * @param {Object} body - The parsed request body.
+ * @returns {string|null} An error message if validation fails, otherwise null.
+ */
 function validateStatusInput(body) {
   if (!body || typeof body !== 'object') return 'request body must be a JSON object';
   if (!TOKEN_STATUSES.has(body.status)) return 'invalid status';
@@ -155,6 +220,11 @@ function validateStatusInput(body) {
   return null;
 }
 
+/**
+ * Validates the request body for creating a notification.
+ * @param {Object} body - The parsed request body.
+ * @returns {string|null} An error message if validation fails, otherwise null.
+ */
 function validateNotificationInput(body) {
   if (!body || typeof body !== 'object') return 'request body must be a JSON object';
   if (typeof body.message !== 'string' || !body.message.trim()) return 'message is required';
@@ -168,6 +238,13 @@ function validateNotificationInput(body) {
   return null;
 }
 
+/**
+ * Builds a new notification object with a generated id, timestamp, and delivered status.
+ * @param {string|null} tokenId - The id of the token the notification relates to, if any.
+ * @param {string} message - The notification message text.
+ * @param {string} [channel='browser'] - The delivery channel for the notification.
+ * @returns {Object} The constructed notification object.
+ */
 function notificationFrom(tokenId, message, channel = 'browser') {
   return {
     id: crypto.randomUUID(),
@@ -179,6 +256,15 @@ function notificationFrom(tokenId, message, channel = 'browser') {
   };
 }
 
+/**
+ * Creates a notification, prepends it to the store (capped at 100 entries), persists the store,
+ * and broadcasts the new notification to connected SSE clients.
+ * @param {Object} store - The data store containing the notifications array.
+ * @param {string|null} tokenId - The id of the token the notification relates to, if any.
+ * @param {string} message - The notification message text.
+ * @param {string} [channel] - The delivery channel for the notification.
+ * @returns {Promise<Object>} The created notification.
+ */
 async function createNotification(store, tokenId, message, channel) {
   const notification = notificationFrom(tokenId, message, channel);
   store.notifications.unshift(notification);
@@ -188,6 +274,12 @@ async function createNotification(store, tokenId, message, channel) {
   return notification;
 }
 
+/**
+ * Determines the next sequence number for a token prefix by scanning existing token ids.
+ * @param {Array<Object>} tokens - The existing tokens to scan.
+ * @param {string} prefix - The id prefix to match (e.g. 'W' or 'A').
+ * @returns {number} The next available sequence number for the given prefix.
+ */
 function getNextTokenSequence(tokens, prefix) {
   return tokens.reduce((highest, token) => {
     if (typeof token.id !== 'string') return highest;
@@ -201,6 +293,14 @@ function getNextTokenSequence(tokens, prefix) {
 }
 
 
+/**
+ * Routes and handles all `/api/*` requests, including auth, health checks, queue/notification
+ * management, and server-sent events, applying rate limiting and role checks as needed.
+ * @param {http.IncomingMessage} request - The incoming HTTP request.
+ * @param {http.ServerResponse} response - The HTTP response to write to.
+ * @param {string} pathname - The request's URL pathname.
+ * @returns {Promise<void>}
+ */
 async function handleApi(request, response, pathname) {
   if (!rateLimit(request, response)) return;
   const store = await readStore();
@@ -313,6 +413,12 @@ async function handleApi(request, response, pathname) {
   sendJson(response, 404, { error: 'API route not found' });
 }
 
+/**
+ * Serves a static file from the project root, defaulting to index.html, with a path traversal guard.
+ * @param {http.ServerResponse} response - The HTTP response to write to.
+ * @param {string} pathname - The request's URL pathname identifying the file to serve.
+ * @returns {Promise<void>}
+ */
 async function serveStatic(response, pathname) {
   const requestedPath = pathname === '/' ? '/index.html' : pathname;
   const filePath = path.resolve(ROOT, `.${requestedPath}`);
