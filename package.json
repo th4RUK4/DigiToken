@@ -5,6 +5,7 @@
   "description": "DigiToken queue maintenance app",
   "scripts": {
     "start": "node server.js",
-    "check": "node --check server.js"
+    "check": "node --check server.js",
+    "test": "node --test"
   }
 }
